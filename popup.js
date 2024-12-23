@@ -1,6 +1,6 @@
 // Initialize Default Database on Installation
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get("database", (data) => {
+  chrome.storage.local.get(["database", "username"], (data) => {
     if (!data.database) {
       fetch(chrome.runtime.getURL("data/database.json"))
         .then((response) => response.json())
@@ -12,6 +12,10 @@ chrome.runtime.onInstalled.addListener(() => {
         .catch((error) => console.error("Error loading default database:", error));
     } else {
       console.log("Database already initialized in chrome.storage.local:", data.database);
+    }
+
+    if (!data.username) {
+      chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
     }
   });
 });
@@ -32,6 +36,15 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("searchInput").focus();
       }
     });
+  });
+
+  // Greet the user
+  chrome.storage.local.get("username", (data) => {
+    if (data.username) {
+      addMessageToChat("bot", `Greetings, ${data.username}! How can I assist you today?`);
+    } else {
+      addMessageToChat("bot", "Welcome! How can I assist you today?");
+    }
   });
 
   // Search for Site Settings
@@ -58,19 +71,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("Filtered Results:", filtered);
 
-      const chatResults = document.getElementById("chatResults");
-      chatResults.innerHTML = "";
+      addMessageToChat("user", searchValue);
 
       if (filtered.length) {
-        addMessageToChat("user", `Searching for: ${searchValue}`);
         filtered.forEach((entry) => {
           addMessageToChat("bot", `Site: ${entry.site_url}\nSettings: ${entry.settings}\nNotes: ${entry.notes}`);
         });
       } else {
-        addMessageToChat("user", `Searching for: ${searchValue}`);
         addMessageToChat("bot", "No results found.");
       }
     });
+
+    document.getElementById("searchInput").value = "";
   });
 
   // Save New Site Settings
@@ -91,6 +103,14 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("siteSettings").value = "";
         document.getElementById("siteNotes").value = "";
       });
+    });
+  });
+
+  // Save Username
+  document.getElementById("saveUsername").addEventListener("click", () => {
+    const username = document.getElementById("username").value;
+    chrome.storage.local.set({ username }, () => {
+      alert("Username saved!");
     });
   });
 

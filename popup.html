@@ -10,6 +10,7 @@
   <div class="tab-container">
     <button class="tab-button active" data-tab="search">Chat</button>
     <button class="tab-button" data-tab="save">Save Site</button>
+    <button class="tab-button" data-tab="settings">Settings</button>
   </div>
   
   <!-- Search Section (now Chat-like UI) -->
@@ -30,6 +31,16 @@
     <input id="siteSettings" placeholder="Settings" />
     <textarea id="siteNotes" placeholder="Notes"></textarea>
     <button id="saveBtn">Save</button>
+  </div>
+  
+  <!-- Add this new section after the save tab content -->
+  <div id="settingsTab" class="tab-content">
+    <h3>Settings</h3>
+    <div>
+      <label for="username">Your Name:</label>
+      <input id="username" type="text" placeholder="Enter your name" />
+      <button id="saveUsername">Save Name</button>
+    </div>
   </div>
   
   <script src="popup.js"></script>
