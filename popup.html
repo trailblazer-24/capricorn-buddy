@@ -35,13 +35,21 @@
   
   <!-- Add this new section after the save tab content -->
   <div id="settingsTab" class="tab-content">
-    <h3>Settings</h3>
-    <div>
-      <label for="username">Your Name:</label>
-      <input id="username" type="text" placeholder="Enter your name" />
-      <button id="saveUsername">Save Name</button>
-    </div>
+  <h3>Settings</h3>
+  <div style="margin-bottom: 20px;">
+    <label for="username" style="display: block; margin-bottom: 8px;">Your Name:</label>
+    <input id="username" type="text" placeholder="Enter your name" />
+    <button id="saveUsername">Save Name</button>
   </div>
+  <div>
+    <label for="themeSelect" style="display: block; margin-bottom: 8px;">Theme:</label>
+    <select id="themeSelect">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="blue">Blue</option>
+    </select>
+  </div>
+</div>
   
   <script src="popup.js"></script>
 </body>

@@ -1,6 +1,6 @@
 // Initialize Default Database on Installation
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(["database", "username"], (data) => {
+  chrome.storage.local.get(["database", "username", "theme"], (data) => {
     if (!data.database) {
       fetch(chrome.runtime.getURL("data/database.json"))
         .then((response) => response.json())
@@ -16,6 +16,10 @@ chrome.runtime.onInstalled.addListener(() => {
 
     if (!data.username) {
       chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
+    }
+
+    if (!data.theme) {
+      chrome.storage.local.set({ theme: "light" });
     }
   });
 });
@@ -36,6 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("searchInput").focus();
       }
     });
+  });
+
+  // Load and apply saved theme
+  chrome.storage.local.get("theme", (data) => {
+    const theme = data.theme || "light";
+    document.body.className = `${theme}-theme`;
+    document.getElementById("themeSelect").value = theme;
   });
 
   // Greet the user
@@ -112,6 +123,13 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.local.set({ username }, () => {
       alert("Username saved!");
     });
+  });
+
+  // Theme Selection
+  document.getElementById("themeSelect").addEventListener("change", (event) => {
+    const theme = event.target.value;
+    document.body.className = `${theme}-theme`;
+    chrome.storage.local.set({ theme });
   });
 
   document.getElementById("searchInput").addEventListener("keypress", (event) => {
