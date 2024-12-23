@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Capricorn Buddy</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2>Capricorn Buddy</h2>
+
+  <div class="tab-container">
+    <button class="tab-button active" data-tab="search">Search</button>
+    <button class="tab-button" data-tab="save">Save Site</button>
+  </div>
+
+  <!-- Search Section -->
+  <div id="searchTab" class="tab-content active">
+    <input id="searchInput" type="text" placeholder="Search site URL" />
+    <button id="searchBtn">Search</button>
+    <div id="chatResults"></div>
+  </div>
+
+  <!-- Add New Entry Section -->
+  <div id="saveTab" class="tab-content">
+    <h3>Add New Site Settings</h3>
+    <input id="siteUrl" placeholder="Site URL" />
+    <input id="siteSettings" placeholder="Settings" />
+    <textarea id="siteNotes" placeholder="Notes"></textarea>
+    <button id="saveBtn">Save</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
