@@ -2,17 +2,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeSelect = document.getElementById('themeSelect');
     const body = document.body;
   
+    function applyTheme(theme) {
+      body.className = `${theme}-theme`;
+      themeSelect.value = theme;
+    }
+  
     // Load saved theme
     chrome.storage.local.get('theme', (data) => {
       const savedTheme = data.theme || 'light';
-      themeSelect.value = savedTheme;
-      body.className = `${savedTheme}-theme`;
+      applyTheme(savedTheme);
     });
   
     // Theme change handler
     themeSelect.addEventListener('change', (event) => {
       const selectedTheme = event.target.value;
-      body.className = `${selectedTheme}-theme`;
+      applyTheme(selectedTheme);
     });
   
     document.getElementById('saveSettings').addEventListener('click', () => {

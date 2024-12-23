@@ -1,55 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Capricorn Buddy</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>Capricorn Buddy</h2>
-  
-  <div class="tab-container">
-    <button class="tab-button active" data-tab="search">Chat</button>
-    <button class="tab-button" data-tab="save">Save Site</button>
-    <button class="tab-button" data-tab="settings">Settings</button>
+  <div class="app-container">
+    <header>
+      <h1>Capricorn Buddy 😎</h1>
+      <nav class="tab-container">
+        <button class="tab-button active" data-tab="search">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Search
+        </button>
+        <button class="tab-button" data-tab="save">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Add
+        </button>
+        <button class="tab-button" data-tab="settings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <div id="searchTab" class="tab-content active">
+        <div id="chatContainer">
+          <div id="chatResults"></div>
+        </div>
+        <div id="chatInputContainer">
+          <input id="searchInput" type="text" placeholder="Search or type 'all'..." />
+          <button id="searchBtn">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div id="saveTab" class="tab-content">
+        <form id="saveSiteForm">
+          <div class="form-group">
+            <input id="siteUrl" placeholder="Site URL" required />
+          </div>
+          <div class="form-group">
+            <input id="siteSettings" placeholder="Settings" required />
+          </div>
+          <div class="form-group">
+            <textarea id="siteNotes" placeholder="Notes" required></textarea>
+          </div>
+          <button type="submit">Save Site</button>
+        </form>
+      </div>
+      
+      <div id="settingsTab" class="tab-content">
+        <form id="settingsForm">
+          <div class="form-group">
+            <label for="username">What should I call you?</label>
+            <input id="username" type="text" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="themeSelect">Theme</label>
+            <select id="themeSelect" required>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="blue">Blue</option>
+            </select>
+          </div>
+          <button type="submit">Save</button>
+        </form>
+        <div class="footer-text">
+          Made with <span>❤️</span> by Biswajit
+        </div>
+      </div>
+    </main>
   </div>
-  
-  <!-- Search Section (now Chat-like UI) -->
-  <div id="searchTab" class="tab-content active">
-    <div id="chatContainer">
-      <div id="chatResults"></div>
-    </div>
-    <div id="chatInputContainer">
-      <input id="searchInput" type="text" placeholder="Type your search query..." />
-      <button id="searchBtn">Send</button>
-    </div>
-  </div>
-  
-  <!-- Add New Entry Section (unchanged) -->
-  <div id="saveTab" class="tab-content">
-    <h3>Add New Site Settings</h3>
-    <input id="siteUrl" placeholder="Site URL" />
-    <input id="siteSettings" placeholder="Settings" />
-    <textarea id="siteNotes" placeholder="Notes"></textarea>
-    <button id="saveBtn">Save</button>
-  </div>
-  
-  <!-- Add this new section after the save tab content -->
-  <div id="settingsTab" class="tab-content">
-  <h3>Settings</h3>
-  <div style="margin-bottom: 20px;">
-    <label for="username" style="display: block; margin-bottom: 8px;">Your Name:</label>
-    <input id="username" type="text" placeholder="Enter your name" />
-    <button id="saveUsername">Save Name</button>
-  </div>
-  <div>
-    <label for="themeSelect" style="display: block; margin-bottom: 8px;">Theme:</label>
-    <select id="themeSelect">
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="blue">Blue</option>
-    </select>
-  </div>
-</div>
   
   <script src="popup.js"></script>
 </body>

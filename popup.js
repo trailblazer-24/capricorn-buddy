@@ -1,103 +1,158 @@
-// Initialize Default Database on Installation
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(["database", "username", "theme"], (data) => {
-    if (!data.database) {
-      fetch(chrome.runtime.getURL("data/database.json"))
-        .then((response) => response.json())
-        .then((defaultDatabase) => {
-          chrome.storage.local.set({ database: defaultDatabase }, () => {
-            console.log("Default database loaded into chrome.storage.local:", defaultDatabase);
-          });
-        })
-        .catch((error) => console.error("Error loading default database:", error));
-    } else {
-      console.log("Database already initialized in chrome.storage.local:", data.database);
-    }
-
-    if (!data.username) {
-      chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
-    }
-
-    if (!data.theme) {
-      chrome.storage.local.set({ theme: "light" });
-    }
-  });
-});
-
-// Tab Switching Logic
 document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = document.querySelectorAll(".tab-button");
   const tabContents = document.querySelectorAll(".tab-content");
+  const searchBtn = document.getElementById("searchBtn");
+  const searchInput = document.getElementById("searchInput");
+  const themeSelect = document.getElementById("themeSelect");
 
+  // Theme Management
+  function applyTheme(theme) {
+    // First remove all theme classes
+    document.body.classList.remove('light-theme', 'dark-theme', 'blue-theme');
+    // Then add the new theme class
+    document.body.classList.add(`${theme}-theme`);
+    // Update select element
+    if (themeSelect) {
+      themeSelect.value = theme;
+    }
+    // Store the theme preference
+    chrome.storage.local.set({ theme });
+  }
+
+  // Load saved theme
+  chrome.storage.local.get("theme", (data) => {
+    const savedTheme = data.theme || "light";
+    applyTheme(savedTheme);
+  });
+
+  // Theme change handler
+  themeSelect.addEventListener("change", (event) => {
+    applyTheme(event.target.value);
+  });
+
+  // Tab Switching Logic
   tabButtons.forEach((button) => {
     button.addEventListener("click", () => {
       tabButtons.forEach((btn) => btn.classList.remove("active"));
       tabContents.forEach((content) => content.classList.remove("active"));
-
+      
       button.classList.add("active");
       document.getElementById(button.dataset.tab + "Tab").classList.add("active");
-      if (button.textContent === "Chat") {
-        document.getElementById("searchInput").focus();
+      
+      if (button.dataset.tab === "search") {
+        searchInput.focus();
       }
     });
   });
 
-  // Load and apply saved theme
-  chrome.storage.local.get("theme", (data) => {
-    const theme = data.theme || "light";
-    document.body.className = `${theme}-theme`;
-    document.getElementById("themeSelect").value = theme;
-  });
-
-  // Greet the user
-  chrome.storage.local.get("username", (data) => {
-    if (data.username) {
-      addMessageToChat("bot", `Greetings, ${data.username}! How can I assist you today?`);
-    } else {
-      addMessageToChat("bot", "Welcome! How can I assist you today?");
-    }
-  });
-
-  // Search for Site Settings
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const searchValue = document.getElementById("searchInput").value.toLowerCase();
+  // Enhanced Chat Message Handler
+  function addMessageToChat(sender, content) {
+    const chatResults = document.getElementById("chatResults");
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("chat-message", `${sender}-message`);
     
-    // Fetch data from both chrome.storage.local and database.json
-    Promise.all([
-      new Promise((resolve) => chrome.storage.local.get(["database", "siteData"], resolve)),
-      fetch(chrome.runtime.getURL("data/database.json")).then(response => response.json())
-    ]).then(([storageData, databaseJson]) => {
-      console.log("Data retrieved from storage:", storageData);
-      console.log("Data retrieved from database.json:", databaseJson);
+    // Create message content
+    if (typeof content === 'object') {
+      const entryDiv = document.createElement("div");
+      entryDiv.classList.add("site-entry");
+      
+      const urlDiv = document.createElement("div");
+      urlDiv.classList.add("site-url");
+      urlDiv.textContent = content.site_url;
+      
+      const detailsDiv = document.createElement("div");
+      detailsDiv.classList.add("site-details");
+      detailsDiv.textContent = `${content.settings}\n${content.notes}`;
+      
+      entryDiv.appendChild(urlDiv);
+      entryDiv.appendChild(detailsDiv);
+      messageElement.appendChild(entryDiv);
+    } else {
+      if (content.startsWith("✓")) {
+        messageElement.classList.add("success-message");
+      }
+      messageElement.textContent = content;
+    }
+    
+    // Add timestamp
+    const timeDiv = document.createElement("div");
+    timeDiv.classList.add("message-time");
+    const now = new Date();
+    timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    messageElement.appendChild(timeDiv);
+    
+    chatResults.appendChild(messageElement);
+    setTimeout(() => {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
+  }
+
+  // Search Functionality
+  async function performSearch() {
+    const searchValue = searchInput.value.trim().toLowerCase();
+    
+    if (!searchValue) {
+      addMessageToChat("bot", "Please enter a search query.");
+      return;
+    }
+
+    addMessageToChat("user", searchValue);
+    searchBtn.disabled = true;
+
+    try {
+      const [storageData, databaseJson] = await Promise.all([
+        new Promise((resolve) => chrome.storage.local.get(["database", "siteData"], resolve)),
+        fetch(chrome.runtime.getURL("data/database.json")).then(response => response.json())
+      ]);
 
       const database = storageData.database || [];
       const siteData = storageData.siteData || [];
       const combinedData = [...siteData, ...database, ...databaseJson];
 
-      console.log("Combined Data:", combinedData);
-
-      const filtered = combinedData.filter((entry) =>
-        entry.site_url.toLowerCase().includes(searchValue)
-      );
-
-      console.log("Filtered Results:", filtered);
-
-      addMessageToChat("user", searchValue);
-
-      if (filtered.length) {
-        filtered.forEach((entry) => {
-          addMessageToChat("bot", `Site: ${entry.site_url}\nSettings: ${entry.settings}\nNotes: ${entry.notes}`);
-        });
+      if (searchValue === 'all') {
+        if (combinedData.length) {
+          addMessageToChat("bot", "All saved sites:");
+          combinedData.forEach(entry => {
+            addMessageToChat("bot", entry);
+          });
+        } else {
+          addMessageToChat("bot", "No sites found in the database.");
+        }
       } else {
-        addMessageToChat("bot", "No results found.");
-      }
-    });
+        const filtered = combinedData.filter((entry) =>
+          entry.site_url.toLowerCase().includes(searchValue)
+        );
 
-    document.getElementById("searchInput").value = "";
+        if (filtered.length) {
+          filtered.forEach(entry => {
+            addMessageToChat("bot", entry);
+          });
+        } else {
+          addMessageToChat("bot", "No results found. Type 'all' to see all entries.");
+        }
+      }
+    } catch (error) {
+      addMessageToChat("bot", "An error occurred while searching.");
+    } finally {
+      searchBtn.disabled = false;
+      searchInput.value = "";
+      searchInput.focus();
+    }
+  }
+
+  searchBtn.addEventListener("click", performSearch);
+  searchInput.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+      performSearch();
+    }
   });
 
-  // Save New Site Settings
-  document.getElementById("saveBtn").addEventListener("click", () => {
+  // Form Handlers
+  document.getElementById("saveSiteForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const submitBtn = event.target.querySelector("button");
+    submitBtn.disabled = true;
+
     const newSite = {
       site_url: document.getElementById("siteUrl").value,
       settings: document.getElementById("siteSettings").value,
@@ -108,43 +163,32 @@ document.addEventListener("DOMContentLoaded", () => {
       const siteData = data.siteData || [];
       siteData.push(newSite);
       chrome.storage.local.set({ siteData }, () => {
-        alert("Site settings saved!");
-        // Clear input fields
-        document.getElementById("siteUrl").value = "";
-        document.getElementById("siteSettings").value = "";
-        document.getElementById("siteNotes").value = "";
+        event.target.reset();
+        submitBtn.disabled = false;
+        addMessageToChat("bot", "✓ Site saved successfully");
       });
     });
   });
 
-  // Save Username
-  document.getElementById("saveUsername").addEventListener("click", () => {
+  document.getElementById("settingsForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const submitBtn = event.target.querySelector("button");
+    submitBtn.disabled = true;
+
     const username = document.getElementById("username").value;
+
     chrome.storage.local.set({ username }, () => {
-      alert("Username saved!");
+      submitBtn.disabled = false;
+      addMessageToChat("bot", "✓ Settings saved");
     });
   });
 
-  // Theme Selection
-  document.getElementById("themeSelect").addEventListener("change", (event) => {
-    const theme = event.target.value;
-    document.body.className = `${theme}-theme`;
-    chrome.storage.local.set({ theme });
-  });
-
-  document.getElementById("searchInput").addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
-      document.getElementById("searchBtn").click();
-    }
+  // Initial greeting
+  chrome.storage.local.get("username", (data) => {
+    const greeting = data.username ? 
+      `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` : 
+      "Welcome! Type 'all' to see saved sites.";
+    addMessageToChat("bot", greeting);
   });
 });
-
-function addMessageToChat(sender, content) {
-  const chatResults = document.getElementById("chatResults");
-  const messageElement = document.createElement("div");
-  messageElement.classList.add("chat-message", `${sender}-message`);
-  messageElement.textContent = content;
-  chatResults.appendChild(messageElement);
-  chatResults.scrollTop = chatResults.scrollHeight;
-}
 
