@@ -1,78 +1,108 @@
 body {
-    font-family: Arial, sans-serif;
-    width: 350px;
-    margin: 0;
-    padding: 10px;
-    background-color: #f9f9f9;
-  }
-  
-  h2, h3 {
-    color: #333;
-  }
-  
-  input, textarea {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  button {
-    padding: 8px 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  .tab-container {
-    display: flex;
-    margin-bottom: 10px;
-  }
-  
-  .tab-button {
-    flex: 1;
-    background-color: #f1f1f1;
-    color: black;
-    border: 1px solid #ccc;
-  }
-  
-  .tab-button.active {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .tab-content {
-    display: none;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
-  #chatResults {
-    margin-top: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-  
-  .chat-message {
-    padding: 8px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-  }
-  
-  .user-message {
-    background-color: #e1f5fe;
-    text-align: right;
-  }
-  
-  .bot-message {
-    background-color: #f0f0f0;
-  }
+  font-family: Arial, sans-serif;
+  width: 350px;
+  margin: 0;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+h2, h3 {
+  color: #333;
+}
+
+input, textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.tab-container {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.tab-button {
+  flex: 1;
+  background-color: #f1f1f1;
+  color: black;
+  border: 1px solid #ccc;
+}
+
+.tab-button.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+#chatContainer {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fff;
+}
+
+#chatInputContainer {
+  display: flex;
+  gap: 10px;
+}
+
+#searchInput {
+  flex-grow: 1;
+  margin-bottom: 0;
+}
+
+#searchBtn {
+  white-space: nowrap;
+}
+
+.chat-message {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  max-width: 80%;
+}
+
+.user-message {
+  background-color: #e1f5fe;
+  text-align: right;
+  margin-left: auto;
+}
+
+.bot-message {
+  background-color: #f0f0f0;
+}
+
+#saveTab input, #saveTab textarea {
+  width: calc(100% - 16px);
+  margin-bottom: 10px;
+}
+
+#saveBtn {
+  width: 100%;
+}
+

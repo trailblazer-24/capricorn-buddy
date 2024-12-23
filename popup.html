@@ -6,20 +6,24 @@
 </head>
 <body>
   <h2>Capricorn Buddy</h2>
-
+  
   <div class="tab-container">
-    <button class="tab-button active" data-tab="search">Search</button>
+    <button class="tab-button active" data-tab="search">Chat</button>
     <button class="tab-button" data-tab="save">Save Site</button>
   </div>
-
-  <!-- Search Section -->
+  
+  <!-- Search Section (now Chat-like UI) -->
   <div id="searchTab" class="tab-content active">
-    <input id="searchInput" type="text" placeholder="Search site URL" />
-    <button id="searchBtn">Search</button>
-    <div id="chatResults"></div>
+    <div id="chatContainer">
+      <div id="chatResults"></div>
+    </div>
+    <div id="chatInputContainer">
+      <input id="searchInput" type="text" placeholder="Type your search query..." />
+      <button id="searchBtn">Send</button>
+    </div>
   </div>
-
-  <!-- Add New Entry Section -->
+  
+  <!-- Add New Entry Section (unchanged) -->
   <div id="saveTab" class="tab-content">
     <h3>Add New Site Settings</h3>
     <input id="siteUrl" placeholder="Site URL" />
@@ -27,7 +31,8 @@
     <textarea id="siteNotes" placeholder="Notes"></textarea>
     <button id="saveBtn">Save</button>
   </div>
-
+  
   <script src="popup.js"></script>
 </body>
 </html>
+

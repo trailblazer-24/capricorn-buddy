@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       button.classList.add("active");
       document.getElementById(button.dataset.tab + "Tab").classList.add("active");
+      if (button.textContent === "Chat") {
+        document.getElementById("searchInput").focus();
+      }
     });
   });
 
@@ -89,6 +92,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("siteNotes").value = "";
       });
     });
+  });
+
+  document.getElementById("searchInput").addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+      document.getElementById("searchBtn").click();
+    }
   });
 });
 
