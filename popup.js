@@ -9,21 +9,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const importButton = document.getElementById("importButton");
   const importFile = document.getElementById("importFile");
 
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+  const closeHamburgerBtn = document.getElementById("closeHamburgerBtn");
+  const hamburgerMenu = document.getElementById("hamburgerMenu");
+  const hamburgerOverlay = document.querySelector(".hamburger-overlay");
+
   exportButton.addEventListener("click", exportSettings);
   importButton.addEventListener("click", () => importFile.click());
   importFile.addEventListener("change", importSettings);
 
+  // Hamburger menu toggle
+  hamburgerBtn.addEventListener("click", () => {
+    hamburgerMenu.classList.add("open");
+    document.body.style.overflow = "hidden";
+  });
+
+  closeHamburgerBtn.addEventListener("click", closeHamburgerMenu);
+  hamburgerOverlay.addEventListener("click", closeHamburgerMenu);
+
+  function closeHamburgerMenu() {
+    hamburgerMenu.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+
   // Theme Management
   function applyTheme(theme) {
-    // First remove all theme classes
     document.body.classList.remove('light-theme', 'dark-theme', 'blue-theme');
-    // Then add the new theme class
     document.body.classList.add(`${theme}-theme`);
-    // Update select element
     if (themeSelect) {
       themeSelect.value = theme;
     }
-    // Store the theme preference
     chrome.storage.local.set({ theme });
   }
 

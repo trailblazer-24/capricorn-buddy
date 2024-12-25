@@ -10,7 +10,14 @@
 <body>
   <div class="app-container">
     <header>
-      <h1>Capricorn Buddy 😎</h1>
+      <div class="header-content">
+        <h1>Capricorn Buddy 😎</h1>
+        <button id="hamburgerBtn" class="hamburger-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+      </div>
       <nav class="tab-container">
         <button class="tab-button active" data-tab="search">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -69,25 +76,37 @@
             <label for="username">What should I call you?</label>
             <input id="username" type="text" placeholder="Enter your name" required />
           </div>
-          <div class="form-group">
-            <label for="themeSelect">Theme</label>
-            <select id="themeSelect" required>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="blue">Blue</option>
-            </select>
-          </div>
           <button type="submit">Save</button>
         </form>
-        <button id="exportButton" class="action-button">Export Settings</button>
-        <input type="file" id="importFile" accept=".xlsx" style="display: none;">
-        <button id="importButton" class="action-button">Import Settings</button>
         <div class="footer-text">
           Made with <span>❤️</span> by Biswajit
         </div>
       </div>
     </main>
   </div>
+  
+  <div id="hamburgerMenu" class="hamburger-menu">
+  <div class="hamburger-overlay"></div>
+  <div class="hamburger-content">
+    <button id="closeHamburgerBtn" class="close-btn">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+    <h2>Settings</h2>
+    <div class="menu-item">
+      <label for="themeSelect">Theme</label>
+      <select id="themeSelect" required>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="blue">Blue</option>
+      </select>
+    </div>
+    <button id="exportButton" class="menu-button">Export Settings</button>
+    <button id="importButton" class="menu-button">Import Settings</button>
+    <input type="file" id="importFile" accept=".xlsx" style="display: none;">
+  </div>
+</div>
   
   <script src="popup.js"></script>
 </body>
