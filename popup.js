@@ -5,6 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
   const themeSelect = document.getElementById("themeSelect");
 
+  const exportButton = document.getElementById("exportButton");
+  const importButton = document.getElementById("importButton");
+  const importFile = document.getElementById("importFile");
+
+  exportButton.addEventListener("click", exportSettings);
+  importButton.addEventListener("click", () => importFile.click());
+  importFile.addEventListener("change", importSettings);
+
   // Theme Management
   function applyTheme(theme) {
     // First remove all theme classes
@@ -191,4 +199,63 @@ document.addEventListener("DOMContentLoaded", () => {
     addMessageToChat("bot", greeting);
   });
 });
+
+function exportSettings() {
+  chrome.storage.local.get("siteData", (data) => {
+    const siteData = data.siteData || [];
+    
+    // Create a worksheet
+    const ws = XLSX.utils.json_to_sheet(siteData);
+    
+    // Create a workbook and add the worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sites");
+    
+    // Generate Excel file
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    
+    // Save file
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    
+    chrome.downloads.download({
+      url: url,
+      filename: 'capricorn_buddy_settings.xlsx',
+      saveAs: true
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        addMessageToChat("bot", "Error exporting settings. Please try again.");
+      } else {
+        addMessageToChat("bot", "✓ Settings exported successfully");
+      }
+    });
+  });
+}
+
+function importSettings(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+    chrome.storage.local.set({ siteData: jsonData }, () => {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        addMessageToChat("bot", "Error importing settings. Please try again.");
+      } else {
+        addMessageToChat("bot", "✓ Settings imported successfully");
+      }
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
 

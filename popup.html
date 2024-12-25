@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Capricorn Buddy</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="lib/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -78,6 +79,9 @@
           </div>
           <button type="submit">Save</button>
         </form>
+        <button id="exportButton" class="action-button">Export Settings</button>
+        <input type="file" id="importFile" accept=".xlsx" style="display: none;">
+        <button id="importButton" class="action-button">Import Settings</button>
         <div class="footer-text">
           Made with <span>❤️</span> by Biswajit
         </div>
