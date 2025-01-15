@@ -26,7 +26,12 @@
           </svg>
           <span>Add Site</span>
         </button>
-        
+        <button class="tab-button" data-tab="todo">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          </svg>
+          <span>Todo List</span>
+        </button>
       </div>
       <button id="hamburgerBtn" class="theme-toggle">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -65,6 +70,48 @@
         </form>
       </div>
       
+      <div id="todoTab" class="tab-content">
+        <div class="todo-container">
+          <form id="todoForm" class="todo-form">
+            <div class="form-group">
+              <div class="input-with-select">
+                <input type="text" id="todoInput" placeholder="Add a new task..." required />
+                <select id="todoPriority" required>
+                  <option value="low">Low Priority</option>
+                  <option value="medium">Medium Priority</option>
+                  <option value="high">High Priority</option>
+                </select>
+              </div>
+              <button type="submit">Add Task</button>
+            </div>
+          </form>
+          
+          <div class="todo-filters">
+            <button class="filter-btn active" data-filter="all">
+              All
+            </button>
+            <button class="filter-btn" data-filter="pending">
+              Pending
+            </button>
+            <button class="filter-btn" data-filter="completed">
+              Completed
+            </button>
+          </div>
+      
+          <div class="todo-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total Tasks:</span>
+              <span id="totalTasks">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Completed:</span>
+              <span id="completedTasks">0</span>
+            </div>
+          </div>
+      
+          <div id="todoList" class="todo-list"></div>
+        </div>
+      </div>
     
     </main>
   </div>

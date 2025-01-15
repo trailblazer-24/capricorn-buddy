@@ -66,6 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (button.dataset.tab === "search") {
         searchInput.focus();
       }
+      if (button.dataset.tab === "todo") {
+        loadTodos();
+        updateTodoStats();
+      }
     });
   });
 
@@ -255,6 +259,161 @@ document.addEventListener("DOMContentLoaded", () => {
       "Welcome! Type 'all' to see saved sites.";
     addMessageToChat("bot", greeting);
   });
+
+
+  const todoForm = document.getElementById("todoForm");
+  const todoInput = document.getElementById("todoInput");
+  const todoList = document.getElementById("todoList");
+  const filterButtons = document.querySelectorAll(".filter-btn");
+  let currentFilter = "all";
+
+  // Load todos when the todo tab is shown
+  document.querySelector('[data-tab="todo"]').addEventListener('click', () => {
+    loadTodos();
+    updateTodoStats();
+  });
+
+  // Handle filter buttons
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      currentFilter = button.dataset.filter;
+      loadTodos();
+    });
+  });
+
+  // Handle todo form submission
+  todoForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const task = todoInput.value;
+    const priority = document.getElementById("todoPriority").value;
+    
+    chrome.storage.local.get("todos", (data) => {
+      const todos = data.todos || [];
+      todos.push({
+        id: Date.now(),
+        task,
+        priority,
+        completed: false,
+        createdAt: new Date().toISOString()
+      });
+      
+      chrome.storage.local.set({ todos }, () => {
+        todoForm.reset();
+        loadTodos();
+        updateTodoStats();
+        addMessageToChat("bot", "✓ Task added successfully");
+      });
+    });
+  });
+
+  // Function to load and display todos
+  function loadTodos() {
+    chrome.storage.local.get("todos", (data) => {
+      const todos = data.todos || [];
+      todoList.innerHTML = "";
+      
+      const filteredTodos = todos.filter(todo => {
+        if (currentFilter === "completed") return todo.completed;
+        if (currentFilter === "pending") return !todo.completed;
+        return true;
+      });
+
+      // Sort by priority (high → medium → low) and then by creation date
+      filteredTodos.sort((a, b) => {
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        if (priorityOrder[b.priority] !== priorityOrder[a.priority]) {
+          return priorityOrder[b.priority] - priorityOrder[a.priority];
+        }
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+
+      filteredTodos.forEach(todo => {
+        const todoItem = document.createElement("div");
+        todoItem.className = `todo-item ${todo.completed ? 'completed' : ''} priority-${todo.priority}`;
+        
+        todoItem.innerHTML = `
+          <div class="todo-checkbox">
+            <input 
+              type="checkbox" 
+              id="todo-${todo.id}" 
+              ${todo.completed ? 'checked' : ''}
+              aria-label="Mark task as ${todo.completed ? 'incomplete' : 'complete'}"
+            />
+            <label class="checkbox-label" for="todo-${todo.id}"></label>
+          </div>
+          <div class="todo-content">
+            <span class="todo-text">${todo.task}</span>
+            <span class="todo-priority">${todo.priority}</span>
+          </div>
+          <button class="delete-todo" aria-label="Delete task">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        `;
+        
+        // Handle checkbox change
+        const checkbox = todoItem.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', () => {
+          toggleTodoComplete(todo.id);
+        });
+        
+        // Handle delete button
+        const deleteBtn = todoItem.querySelector('.delete-todo');
+        deleteBtn.addEventListener('click', () => {
+          deleteTodo(todo.id);
+        });
+        
+        todoList.appendChild(todoItem);
+      });
+
+      updateTodoStats();
+    });
+  }
+
+  // Function to update todo statistics
+  function updateTodoStats() {
+    chrome.storage.local.get("todos", (data) => {
+      const todos = data.todos || [];
+      const totalTasks = todos.length;
+      const completedTasks = todos.filter(todo => todo.completed).length;
+      
+      document.getElementById("totalTasks").textContent = totalTasks;
+      document.getElementById("completedTasks").textContent = completedTasks;
+    });
+  }
+
+  // Function to toggle todo completion
+  function toggleTodoComplete(id) {
+    chrome.storage.local.get("todos", (data) => {
+      const todos = data.todos || [];
+      const updatedTodos = todos.map(todo => 
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      );
+      
+      chrome.storage.local.set({ todos: updatedTodos }, () => {
+        loadTodos();
+        updateTodoStats();
+      });
+    });
+  }
+
+  // Function to delete todo
+  function deleteTodo(id) {
+    chrome.storage.local.get("todos", (data) => {
+      const todos = data.todos || [];
+      const updatedTodos = todos.filter(todo => todo.id !== id);
+      
+      chrome.storage.local.set({ todos: updatedTodos }, () => {
+        loadTodos();
+        updateTodoStats();
+        addMessageToChat("bot", "✓ Task deleted successfully");
+      });
+    });
+  }
+
 
 
 });
