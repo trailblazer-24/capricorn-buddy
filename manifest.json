@@ -4,13 +4,16 @@
     "version": "1.0",
     "permissions": [
       "storage",
-      "downloads"
+      "downloads",
+      "notifications"
     ],
     "background": {
       "service_worker": "background.js"
     },
     "action": {
-      "default_popup": "popup.html"
+      "default_popup": "popup.html",
+      "default_width": 800,
+      "default_height": 500
     },
     "host_permissions": [
       "http://*/*",

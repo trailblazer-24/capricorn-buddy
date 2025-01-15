@@ -214,6 +214,25 @@ document.addEventListener("DOMContentLoaded", () => {
       "Welcome! Type 'all' to see saved sites.";
     addMessageToChat("bot", greeting);
   });
+
+  // Todo functionality
+  const todoForm = document.getElementById("todoForm");
+  const todoList = document.getElementById("todoList");
+
+  // Load todos
+  loadTodos();
+
+  todoForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const title = document.getElementById("todoTitle").value;
+    const date = document.getElementById("todoDate").value;
+    
+    addTodo(title, date);
+    todoForm.reset();
+  });
+
+  // Check for due todos every minute
+  setInterval(checkDueTodos, 60000);
 });
 
 function exportSettings() {
@@ -273,5 +292,128 @@ function importSettings(event) {
     });
   };
   reader.readAsArrayBuffer(file);
+}
+
+function addTodo(title, date) {
+  chrome.storage.local.get("todos", (data) => {
+    const todos = data.todos || [];
+    const newTodo = {
+      id: Date.now(),
+      title,
+      date,
+      completed: false
+    };
+    
+    todos.push(newTodo);
+    chrome.storage.local.set({ todos }, () => {
+      loadTodos();
+      scheduleTodoNotification(newTodo);
+    });
+  });
+}
+
+function loadTodos() {
+  const todoList = document.getElementById("todoList");
+  chrome.storage.local.get("todos", (data) => {
+    const todos = data.todos || [];
+    todoList.innerHTML = "";
+    
+    todos.sort((a, b) => new Date(a.date) - new Date(b.date))
+         .forEach(todo => {
+           const todoItem = createTodoElement(todo);
+           todoList.appendChild(todoItem);
+         });
+  });
+}
+
+function createTodoElement(todo) {
+  const div = document.createElement("div");
+  div.className = `todo-item ${todo.completed ? 'todo-completed' : ''}`;
+  
+  div.innerHTML = `
+    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+    <div class="todo-content">
+      <div class="todo-title">${todo.title}</div>
+      <div class="todo-date">${formatDate(todo.date)}</div>
+    </div>
+    <button class="todo-delete">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  `;
+
+  const checkbox = div.querySelector(".todo-checkbox");
+  checkbox.addEventListener("change", () => toggleTodo(todo.id));
+
+  const deleteBtn = div.querySelector(".todo-delete");
+  deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
+
+  return div;
+}
+
+function toggleTodo(id) {
+  chrome.storage.local.get("todos", (data) => {
+    const todos = data.todos || [];
+    const updatedTodos = todos.map(todo => 
+      todo.id === id ? {...todo, completed: !todo.completed} : todo
+    );
+    chrome.storage.local.set({ todos: updatedTodos }, loadTodos);
+  });
+}
+
+function deleteTodo(id) {
+  chrome.storage.local.get("todos", (data) => {
+    const todos = data.todos || [];
+    const updatedTodos = todos.filter(todo => todo.id !== id);
+    chrome.storage.local.set({ todos: updatedTodos }, loadTodos);
+  });
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function checkDueTodos() {
+  chrome.storage.local.get("todos", (data) => {
+    const todos = data.todos || [];
+    const now = new Date();
+    
+    todos.forEach(todo => {
+      if (!todo.completed && new Date(todo.date) <= now) {
+        chrome.notifications.create(`todo-${todo.id}`, {
+          type: "basic",
+          iconUrl: "icon.png",
+          title: "Todo Reminder",
+          message: todo.title,
+          priority: 2
+        });
+      }
+    });
+  });
+}
+
+function scheduleTodoNotification(todo) {
+  const notificationTime = new Date(todo.date).getTime();
+  const now = Date.now();
+  
+  if (notificationTime > now) {
+    setTimeout(() => {
+      chrome.notifications.create(`todo-${todo.id}`, {
+        type: "basic",
+        iconUrl: "icon.png",
+        title: "Todo Reminder",
+        message: todo.title,
+        priority: 2
+      });
+    }, notificationTime - now);
+  }
 }
 
