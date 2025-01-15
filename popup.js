@@ -69,59 +69,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Enhanced Chat Message Handler
-  function addMessageToChat(sender, content) {
-    const chatResults = document.getElementById("chatResults");
-    const messageElement = document.createElement("div");
-    messageElement.classList.add("chat-message", `${sender}-message`);
-    
-    // Create message content
-    if (typeof content === 'object') {
-      const entryDiv = document.createElement("div");
-      entryDiv.classList.add("site-entry");
-      
-      const urlDiv = document.createElement("div");
-      urlDiv.classList.add("site-url");
-      urlDiv.textContent = content.site_url;
-      
-      const detailsDiv = document.createElement("div");
-      detailsDiv.classList.add("site-details");
-      detailsDiv.textContent = `${content.settings}\n${content.notes}`;
-      
-      entryDiv.appendChild(urlDiv);
-      entryDiv.appendChild(detailsDiv);
-      messageElement.appendChild(entryDiv);
-    } else {
-      if (content.startsWith("✓")) {
-        messageElement.classList.add("success-message");
-      }
-      messageElement.textContent = content;
-    }
-    
-    // Add timestamp
-    const timeDiv = document.createElement("div");
-    timeDiv.classList.add("message-time");
-    const now = new Date();
-    timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    messageElement.appendChild(timeDiv);
-    
-    chatResults.appendChild(messageElement);
-    setTimeout(() => {
-      messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 100);
-  }
-
   // Search Functionality
   async function performSearch() {
-    const searchValue = searchInput.value.trim().toLowerCase();
+    const searchValue = searchInput.value.trim();
     
     if (!searchValue) {
-      addMessageToChat("bot", "Please enter a search query.");
+      addMessageToChat("bot", "Please enter a search query or command.");
       return;
     }
 
     addMessageToChat("user", searchValue);
     searchBtn.disabled = true;
+
+    // Handle commands
+    if (searchValue.startsWith('!')) {
+      handleCommand(searchValue);
+      searchBtn.disabled = false;
+      searchInput.value = "";
+      searchInput.focus();
+      return;
+    }
 
     try {
       const [storageData, databaseJson] = await Promise.all([
@@ -415,5 +382,89 @@ function scheduleTodoNotification(todo) {
       });
     }, notificationTime - now);
   }
+}
+
+function handleCommand(command) {
+  const [cmd, ...args] = command.slice(1).split(' ');
+  
+  switch (cmd.toLowerCase()) {
+    case 'name':
+      if (args.length === 0) {
+        addMessageToChat("bot", "Please provide a name. Usage: !name your_name");
+        return;
+      }
+      const username = args.join(' ');
+      chrome.storage.local.set({ username }, () => {
+        // First add the success message
+        addMessageToChat("bot", `✓ Name saved! Welcome, ${username}! 😊`);
+        
+        // Then show the alert message
+        const alertMessage = document.createElement("div");
+        alertMessage.className = "alert-message";
+        alertMessage.textContent = `Name updated to: ${username}`;
+        document.body.appendChild(alertMessage);
+        
+        // Remove the alert after 3 seconds
+        setTimeout(() => {
+          alertMessage.classList.add('fade-out');
+          setTimeout(() => alertMessage.remove(), 300);
+        }, 3000);
+      });
+      break;
+
+    case 'help':
+      addMessageToChat("bot", 
+`Available commands:
+• !name your_name - Set your name
+• !help - Show this help message
+• all - Show all saved sites
+
+Type any command to try it out!`);
+      break;
+
+    default:
+      addMessageToChat("bot", `Unknown command. Type !help to see available commands.`);
+  }
+}
+
+function addMessageToChat(sender, content) {
+  const chatResults = document.getElementById("chatResults");
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("chat-message", `${sender}-message`);
+  
+  // Create message content
+  if (typeof content === 'object') {
+    const entryDiv = document.createElement("div");
+    entryDiv.classList.add("site-entry");
+    
+    const urlDiv = document.createElement("div");
+    urlDiv.classList.add("site-url");
+    urlDiv.textContent = content.site_url;
+    
+    const detailsDiv = document.createElement("div");
+    detailsDiv.classList.add("site-details");
+    detailsDiv.textContent = `${content.settings}\n${content.notes}`;
+    
+    entryDiv.appendChild(urlDiv);
+    entryDiv.appendChild(detailsDiv);
+    messageElement.appendChild(entryDiv);
+  } else {
+    if (content.startsWith("✓")) {
+      messageElement.classList.add("success-message");
+    }
+    messageElement.textContent = content;
+  }
+  
+  // Add timestamp
+  const timeDiv = document.createElement("div");
+  timeDiv.classList.add("message-time");
+  const now = new Date();
+  timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  messageElement.appendChild(timeDiv);
+  
+  chatResults.appendChild(messageElement);
+  setTimeout(() => {
+    messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, 100);
 }
 
