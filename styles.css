@@ -50,6 +50,9 @@
   --blue-card-bg: #ffffff;
   --blue-card-border: #bae6fd;
   --blue-hover-bg: #e0f2fe;
+
+  /* Add a CSS variable for the button background RGB value */
+  --button-bg-rgb: 0, 122, 255;
 }
 
 /* Theme Applications */
@@ -87,6 +90,7 @@ body.dark-theme {
   --card-bg: var(--dark-card-bg);
   --card-border: var(--dark-card-border);
   --hover-bg: var(--dark-hover-bg);
+  --button-bg-rgb: 10, 132, 255;
 }
 
 body.blue-theme {
@@ -105,11 +109,12 @@ body.blue-theme {
   --card-bg: var(--blue-card-bg);
   --card-border: var(--blue-card-border);
   --hover-bg: var(--blue-hover-bg);
+  --button-bg-rgb: 2, 132, 199;
 }
 
 /* Core Styles */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   width: 800px;
   height: 500px;
   margin: 0;
@@ -150,21 +155,25 @@ body {
 
 .logo h1 {
   font-family: 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: 24px;
   margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-color);
+}
+
+.logo h1 .accent {
   background: linear-gradient(135deg, var(--button-bg), #6366f1);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .emoji {
-  -webkit-text-fill-color: initial;
+  font-size: 20px;
   animation: wave 2s ease-in-out infinite;
   display: inline-block;
   transform-origin: 70% 70%;
@@ -259,6 +268,7 @@ body {
   transition: all 0.2s ease;
   text-align: left;
   width: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
 .tab-button:hover {
@@ -321,6 +331,8 @@ body {
 .tab-content.active {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  height: auto;
 }
 
 /* Todo List Styles */
@@ -533,6 +545,7 @@ body {
 
 input, textarea, select {
   width: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Update the chat container for the new layout */
@@ -553,7 +566,7 @@ input, textarea, select {
   background: var(--bg-color);
 }
 
-input, textarea, select {
+input, textarea, select, button {
   font-size: 15px;
   padding: 12px 16px;
   border: none;
@@ -562,6 +575,7 @@ input, textarea, select {
   color: var(--text-color);
   transition: all 0.2s ease;
   box-shadow: inset 0 0 0 1px var(--input-border);
+  font-family: 'Inter', sans-serif;
 }
 
 input:focus, textarea:focus, select:focus {
@@ -593,6 +607,7 @@ button {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-family: 'Inter', sans-serif;
 }
 
 button:hover {
@@ -853,4 +868,214 @@ button:disabled {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--secondary-text);
 }
+
+/* Sidebar Footer */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--secondary-text);
+  font-family: 'Inter', sans-serif;
+  border-top: 1px solid var(--card-border);
+  margin-bottom: 16px;
+}
+
+.sidebar-footer .heart {
+  color: #ef4444;
+  display: inline-block;
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Search Input Styles */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background-color: var(--input-bg);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid var(--input-border);
+}
+
+.search-wrapper input {
+  flex: 1;
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 12px;
+}
+
+.search-wrapper input:focus {
+  box-shadow: none;
+}
+
+.search-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  transition: all 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: var(--button-hover);
+}
+
+.search-button .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Save Form Styles */
+.save-site-container {
+  max-width: 100%;
+  height: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: var(--bg-color);
+}
+
+.save-site-header {
+  margin-bottom: 8px;
+}
+
+.save-site-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.save-site-subtitle {
+  font-size: 14px;
+  color: var(--secondary-text);
+  margin: 0;
+}
+
+.save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.save-form .form-group {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.save-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.save-form input,
+.save-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.save-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.save-form input:focus,
+.save-form textarea:focus {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.1);
+  outline: none;
+}
+
+.save-form input::placeholder,
+.save-form textarea::placeholder {
+  color: var(--secondary-text);
+  opacity: 0.7;
+}
+
+.save-form .submit-button {
+  margin-top: 8px;
+  padding: 12px 16px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.save-form .submit-button:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-1px);
+}
+
+.save-form .submit-button:active {
+  transform: translateY(0);
+}
+
+.save-form .submit-button .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Dark theme specific adjustments */
+/* body.dark-theme .save-site-container {
+  background-color: #111111;
+}
+
+body.dark-theme .save-form input,
+body.dark-theme .save-form textarea {
+  background-color: #1a1a1a;
+  border-color: #333333;
+}
+
+body.dark-theme .save-form input:focus,
+body.dark-theme .save-form textarea:focus {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.1);
+}
+
+body.dark-theme .save-form label {
+  color: #e0e0e0;
+}
+
+body.dark-theme .save-site-subtitle {
+  color: #888888;
+} */
+
 

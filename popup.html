@@ -15,7 +15,7 @@
     <nav class="sidebar">
       <div class="logo">
         <div class="logo-content">
-          <h1>Capricorn Buddy <span class="emoji">😎</span></h1>
+          <h1>Capricorn<span class="accent">Buddy</span> <span class="emoji">🤖</span></h1>
           <div class="status">
             <span class="status-dot"></span>
             <span class="status-text">Always Online</span>
@@ -42,6 +42,9 @@
           <span>Todo List</span>
         </button>
       </div>
+      <div class="sidebar-footer">
+        <p>Made with <span class="heart">❤️</span> by<br/>Biswajit</p>
+      </div>
       <button id="hamburgerBtn" class="theme-toggle">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 7H4M20 12H4M20 17H4"/>
@@ -55,30 +58,62 @@
           <div id="chatResults"></div>
         </div>
         <div id="chatInputContainer">
-          <input type="text" id="searchInput" placeholder="Search or type a command...">
-          <button id="searchBtn">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15L9 21 3 12l6-9 12 6-9 6z" fill="none" stroke="currentColor"/>
-            </svg>
-          </button>
+          <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="Search or type a command...">
+            <button id="searchBtn" class="search-button">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2.5 12h19m-3-3l3 3-3 3"/>
+              </svg>
+              <span>Send</span>
+            </button>
+          </div>
         </div>
       </div>
       
       <div id="saveTab" class="tab-content">
-        <form id="saveSiteForm">
-          <div class="form-group">
-            <input id="siteUrl" placeholder="Site URL/Name" required />
+        <div class="save-site-container">
+          <div class="save-site-header">
+            <h2 class="save-site-title">Add New Site</h2>
+            <p class="save-site-subtitle">Enter the details of the site you want to save</p>
           </div>
-          <div class="form-group">
-            <input id="siteSettings" placeholder="Certificate Type" required />
-          </div>
-          <div class="form-group">
-            <textarea id="siteNotes" placeholder="Site Settings/Notes" required></textarea>
-          </div>
-          <button type="submit">Save Site</button>
-        </form>
+          <form id="saveSiteForm" class="save-form">
+            <div class="form-group">
+              <label for="siteUrl">Site URL</label>
+              <input 
+                type="url" 
+                id="siteUrl" 
+                placeholder="https://example.com" 
+                required 
+              />
+            </div>
+            <div class="form-group">
+              <label for="siteSettings">Settings</label>
+              <input 
+                type="text" 
+                id="siteSettings" 
+                placeholder="Enter site settings" 
+                required 
+              />
+            </div>
+            <div class="form-group">
+              <label for="siteNotes">Notes</label>
+              <textarea 
+                id="siteNotes" 
+                placeholder="Enter additional notes" 
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="submit-button">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 13l4 4L19 7"/>
+              </svg>
+              Save Site
+            </button>
+          </form>
+        </div>
       </div>
-      
+
       <div id="todoTab" class="tab-content">
         <div class="todo-container">
           <form id="todoForm" class="todo-form">
