@@ -59,10 +59,10 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       tabButtons.forEach((btn) => btn.classList.remove("active"));
       tabContents.forEach((content) => content.classList.remove("active"));
-      
+
       button.classList.add("active");
       document.getElementById(button.dataset.tab + "Tab").classList.add("active");
-      
+
       if (button.dataset.tab === "search") {
         searchInput.focus();
       }
@@ -70,25 +70,28 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Search Functionality
-  async function performSearch() {
-    const searchValue = searchInput.value.trim();
-    
+
+  async function performSearch(searchValue) {
+    searchValue = searchValue || searchInput.value.trim();
+
     if (!searchValue) {
       addMessageToChat("bot", "Please enter a search query or command.");
       return;
     }
 
+    // Add the user message to the chat
     addMessageToChat("user", searchValue);
-    searchBtn.disabled = true;
 
-    // Handle commands
+    // Handle commands starting with '!'
     if (searchValue.startsWith('!')) {
       handleCommand(searchValue);
       searchBtn.disabled = false;
       searchInput.value = "";
       searchInput.focus();
-      return;
+      return; // Return early to prevent further processing
     }
+
+    searchBtn.disabled = true;
 
     try {
       const [storageData, databaseJson] = await Promise.all([
@@ -100,27 +103,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const siteData = storageData.siteData || [];
       const combinedData = [...siteData, ...database, ...databaseJson];
 
-      if (searchValue === 'all') {
-        if (combinedData.length) {
-          addMessageToChat("bot", "All saved sites:");
-          combinedData.forEach(entry => {
-            addMessageToChat("bot", entry);
-          });
-        } else {
-          addMessageToChat("bot", "No sites found in the database.");
-        }
-      } else {
-        const filtered = combinedData.filter((entry) =>
-          entry.site_url.toLowerCase().includes(searchValue)
-        );
+      const filtered = combinedData.filter((entry) =>
+        entry.site_url.toLowerCase().includes(searchValue)
+      );
 
-        if (filtered.length) {
-          filtered.forEach(entry => {
-            addMessageToChat("bot", entry);
-          });
-        } else {
-          addMessageToChat("bot", "No results found. Type 'all' to see all entries.");
-        }
+      if (filtered.length) {
+        filtered.forEach(entry => {
+          addMessageToChat("bot", entry);
+        });
+      } else {
+        addMessageToChat("bot", "No results found. Type 'all' to see all entries.");
       }
     } catch (error) {
       addMessageToChat("bot", "An error occurred while searching.");
@@ -130,6 +122,99 @@ document.addEventListener("DOMContentLoaded", () => {
       searchInput.focus();
     }
   }
+
+
+  function handleCommand(command) {
+    const [cmd, ...args] = command.slice(1).split(' ');
+
+    switch (cmd.toLowerCase()) {
+      case 'name':
+        if (args.length === 0) {
+          addMessageToChat("bot", "Please provide a name. Usage: !name your_name");
+          return;
+        }
+        const username = args.join(' ');
+        chrome.storage.local.set({ username }, () => {
+          addMessageToChat("bot", `✓ Name saved! Welcome, ${username}! 😊`);
+          const alertMessage = document.createElement("div");
+          alertMessage.className = "alert-message";
+          alertMessage.textContent = `Name updated to: ${username}`;
+          document.body.appendChild(alertMessage);
+          setTimeout(() => {
+            alertMessage.classList.add('fade-out');
+            setTimeout(() => alertMessage.remove(), 300);
+          }, 3000);
+        });
+        break;
+
+      case 'help':
+        addMessageToChat("bot",
+          `Available commands:
+  • !name your_name - Set your name
+  • !help - Show this help message
+  • !all - Show all saved sites
+  • !joke - Listen a joke
+  • !gyaan - Get a random advice
+  
+  Type any command to try it out!`);
+        break;
+
+      case 'all':
+        chrome.storage.local.get(["database", "siteData"], async (storageData) => {
+          const database = storageData.database || [];
+          const siteData = storageData.siteData || [];
+          const response = await fetch(chrome.runtime.getURL("data/database.json"));
+          const databaseJson = await response.json();
+          const combinedData = [...siteData, ...database, ...databaseJson];
+
+          if (combinedData.length) {
+            addMessageToChat("bot", "All saved sites:");
+            combinedData.forEach(entry => {
+              addMessageToChat("bot", entry);
+            });
+          } else {
+            addMessageToChat("bot", "No sites found in the database.");
+          }
+        });
+
+        break;
+
+      case 'joke':
+        // New 'joke' command logic
+        fetch('https://icanhazdadjoke.com/', {
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            addMessageToChat("bot", data.joke);
+          })
+          .catch(error => {
+            addMessageToChat("bot", "Sorry, I couldn't fetch a joke right now. Try again later!");
+          });
+        break;
+
+      
+        case 'gyaan':
+          // New 'advice' command logic
+          fetch('https://api.adviceslip.com/advice', {
+            method: 'GET',
+          })
+            .then(response => response.json())
+            .then(data => {
+              addMessageToChat("bot", data.slip.advice);  // data.slip.advice contains the advice
+            })
+            .catch(error => {
+              addMessageToChat("bot", "Sorry, I couldn't fetch advice right now. Try again later!");
+            });
+          break;
+
+      default:
+        addMessageToChat("bot", `Unknown command. Type !help to see available commands.`);
+    }
+  }
+
 
   searchBtn.addEventListener("click", performSearch);
   searchInput.addEventListener("keypress", (event) => {
@@ -161,65 +246,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.getElementById("settingsForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const submitBtn = event.target.querySelector("button");
-    submitBtn.disabled = true;
 
-    const username = document.getElementById("username").value;
-
-    chrome.storage.local.set({ username }, () => {
-      submitBtn.disabled = false;
-      addMessageToChat("bot", "✓ Settings saved");
-    });
-  });
 
   // Initial greeting
   chrome.storage.local.get("username", (data) => {
-    const greeting = data.username ? 
-      `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` : 
+    const greeting = data.username ?
+      `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` :
       "Welcome! Type 'all' to see saved sites.";
     addMessageToChat("bot", greeting);
   });
 
-  // Todo functionality
-  const todoForm = document.getElementById("todoForm");
-  const todoList = document.getElementById("todoList");
 
-  // Load todos
-  loadTodos();
-
-  todoForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const title = document.getElementById("todoTitle").value;
-    const date = document.getElementById("todoDate").value;
-    
-    addTodo(title, date);
-    todoForm.reset();
-  });
-
-  // Check for due todos every minute
-  setInterval(checkDueTodos, 60000);
 });
 
 function exportSettings() {
   chrome.storage.local.get("siteData", (data) => {
     const siteData = data.siteData || [];
-    
+
     // Create a worksheet
     const ws = XLSX.utils.json_to_sheet(siteData);
-    
+
     // Create a workbook and add the worksheet
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sites");
-    
+
     // Generate Excel file
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    
+
     // Save file
     const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
-    
+
     chrome.downloads.download({
       url: url,
       filename: 'capricorn_buddy_settings.xlsx',
@@ -240,13 +297,13 @@ function importSettings(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: 'array' });
-    
+
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    
+
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
     chrome.storage.local.set({ siteData: jsonData }, () => {
@@ -261,81 +318,6 @@ function importSettings(event) {
   reader.readAsArrayBuffer(file);
 }
 
-function addTodo(title, date) {
-  chrome.storage.local.get("todos", (data) => {
-    const todos = data.todos || [];
-    const newTodo = {
-      id: Date.now(),
-      title,
-      date,
-      completed: false
-    };
-    
-    todos.push(newTodo);
-    chrome.storage.local.set({ todos }, () => {
-      loadTodos();
-      scheduleTodoNotification(newTodo);
-    });
-  });
-}
-
-function loadTodos() {
-  const todoList = document.getElementById("todoList");
-  chrome.storage.local.get("todos", (data) => {
-    const todos = data.todos || [];
-    todoList.innerHTML = "";
-    
-    todos.sort((a, b) => new Date(a.date) - new Date(b.date))
-         .forEach(todo => {
-           const todoItem = createTodoElement(todo);
-           todoList.appendChild(todoItem);
-         });
-  });
-}
-
-function createTodoElement(todo) {
-  const div = document.createElement("div");
-  div.className = `todo-item ${todo.completed ? 'todo-completed' : ''}`;
-  
-  div.innerHTML = `
-    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-    <div class="todo-content">
-      <div class="todo-title">${todo.title}</div>
-      <div class="todo-date">${formatDate(todo.date)}</div>
-    </div>
-    <button class="todo-delete">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
-  `;
-
-  const checkbox = div.querySelector(".todo-checkbox");
-  checkbox.addEventListener("change", () => toggleTodo(todo.id));
-
-  const deleteBtn = div.querySelector(".todo-delete");
-  deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
-
-  return div;
-}
-
-function toggleTodo(id) {
-  chrome.storage.local.get("todos", (data) => {
-    const todos = data.todos || [];
-    const updatedTodos = todos.map(todo => 
-      todo.id === id ? {...todo, completed: !todo.completed} : todo
-    );
-    chrome.storage.local.set({ todos: updatedTodos }, loadTodos);
-  });
-}
-
-function deleteTodo(id) {
-  chrome.storage.local.get("todos", (data) => {
-    const todos = data.todos || [];
-    const updatedTodos = todos.filter(todo => todo.id !== id);
-    chrome.storage.local.set({ todos: updatedTodos }, loadTodos);
-  });
-}
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -348,103 +330,25 @@ function formatDate(dateString) {
   });
 }
 
-function checkDueTodos() {
-  chrome.storage.local.get("todos", (data) => {
-    const todos = data.todos || [];
-    const now = new Date();
-    
-    todos.forEach(todo => {
-      if (!todo.completed && new Date(todo.date) <= now) {
-        chrome.notifications.create(`todo-${todo.id}`, {
-          type: "basic",
-          iconUrl: "icon.png",
-          title: "Todo Reminder",
-          message: todo.title,
-          priority: 2
-        });
-      }
-    });
-  });
-}
-
-function scheduleTodoNotification(todo) {
-  const notificationTime = new Date(todo.date).getTime();
-  const now = Date.now();
-  
-  if (notificationTime > now) {
-    setTimeout(() => {
-      chrome.notifications.create(`todo-${todo.id}`, {
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Todo Reminder",
-        message: todo.title,
-        priority: 2
-      });
-    }, notificationTime - now);
-  }
-}
-
-function handleCommand(command) {
-  const [cmd, ...args] = command.slice(1).split(' ');
-  
-  switch (cmd.toLowerCase()) {
-    case 'name':
-      if (args.length === 0) {
-        addMessageToChat("bot", "Please provide a name. Usage: !name your_name");
-        return;
-      }
-      const username = args.join(' ');
-      chrome.storage.local.set({ username }, () => {
-        // First add the success message
-        addMessageToChat("bot", `✓ Name saved! Welcome, ${username}! 😊`);
-        
-        // Then show the alert message
-        const alertMessage = document.createElement("div");
-        alertMessage.className = "alert-message";
-        alertMessage.textContent = `Name updated to: ${username}`;
-        document.body.appendChild(alertMessage);
-        
-        // Remove the alert after 3 seconds
-        setTimeout(() => {
-          alertMessage.classList.add('fade-out');
-          setTimeout(() => alertMessage.remove(), 300);
-        }, 3000);
-      });
-      break;
-
-    case 'help':
-      addMessageToChat("bot", 
-`Available commands:
-• !name your_name - Set your name
-• !help - Show this help message
-• all - Show all saved sites
-
-Type any command to try it out!`);
-      break;
-
-    default:
-      addMessageToChat("bot", `Unknown command. Type !help to see available commands.`);
-  }
-}
 
 function addMessageToChat(sender, content) {
   const chatResults = document.getElementById("chatResults");
   const messageElement = document.createElement("div");
   messageElement.classList.add("chat-message", `${sender}-message`);
-  
+
   // Create message content
   if (typeof content === 'object') {
     const entryDiv = document.createElement("div");
     entryDiv.classList.add("site-entry");
-    
+
     const urlDiv = document.createElement("div");
     urlDiv.classList.add("site-url");
     urlDiv.textContent = content.site_url;
-    
+
     const detailsDiv = document.createElement("div");
     detailsDiv.classList.add("site-details");
     detailsDiv.textContent = `${content.settings}\n${content.notes}`;
-    
+
     entryDiv.appendChild(urlDiv);
     entryDiv.appendChild(detailsDiv);
     messageElement.appendChild(entryDiv);
@@ -454,14 +358,14 @@ function addMessageToChat(sender, content) {
     }
     messageElement.textContent = content;
   }
-  
+
   // Add timestamp
   const timeDiv = document.createElement("div");
   timeDiv.classList.add("message-time");
   const now = new Date();
   timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   messageElement.appendChild(timeDiv);
-  
+
   chatResults.appendChild(messageElement);
   setTimeout(() => {
     messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
