@@ -122,8 +122,8 @@ body {
 
 .app-container {
   display: flex;
-  width: 800px;
-  height: 500px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -142,9 +142,99 @@ body {
   margin-bottom: 16px;
 }
 
+.logo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .logo h1 {
-  font-size: 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
   margin: 0;
+  background: linear-gradient(135deg, var(--button-bg), #6366f1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.emoji {
+  -webkit-text-fill-color: initial;
+  animation: wave 2s ease-in-out infinite;
+  display: inline-block;
+  transform-origin: 70% 70%;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  position: relative;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  opacity: 0.4;
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--secondary-text);
+  font-weight: 500;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
 }
 
 .tab-container {
@@ -190,6 +280,7 @@ body {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Update the theme toggle button */
@@ -314,8 +405,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 300px;
+  max-height: calc(100vh - 250px);
   overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
 }
 
 .todo-item {
@@ -739,5 +832,25 @@ button:disabled {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--input-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--input-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-text);
 }
 

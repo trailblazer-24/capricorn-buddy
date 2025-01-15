@@ -1,3 +1,6 @@
+const MAX_CHAT_HISTORY = 20; // Maximum number of messages to keep
+const CHAT_HISTORY_KEY = 'chatHistory';
+
 document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = document.querySelectorAll(".tab-button");
   const tabContents = document.querySelectorAll(".tab-content");
@@ -253,11 +256,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // Initial greeting
-  chrome.storage.local.get("username", (data) => {
-    const greeting = data.username ?
-      `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` :
-      "Welcome! Type 'all' to see saved sites.";
-    addMessageToChat("bot", greeting);
+  // Load chat history instead of showing initial greeting
+  loadChatHistory();
+
+  // If there's no chat history, show the initial greeting
+  chrome.storage.local.get([CHAT_HISTORY_KEY, "username"], (data) => {
+    if (!data[CHAT_HISTORY_KEY] || data[CHAT_HISTORY_KEY].length === 0) {
+      const greeting = data.username ?
+        `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` :
+        "Welcome! Type 'all' to see saved sites.";
+      addMessageToChat("bot", greeting);
+    }
   });
 
 
@@ -414,7 +423,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
+  // Add this in the DOMContentLoaded event listener
+  // const clearChatButton = document.getElementById("clearChatButton");
+  // clearChatButton.addEventListener("click", () => {
+  //   chrome.storage.local.remove(CHAT_HISTORY_KEY, () => {
+  //     document.getElementById("chatResults").innerHTML = '';
+  //     closeHamburgerMenu();
+  //     // addMessageToChat("bot", "✓ Chat history cleared");
+  //   });
+  // });
 
 });
 
@@ -496,6 +513,7 @@ function addMessageToChat(sender, content) {
   messageElement.classList.add("chat-message", `${sender}-message`);
 
   // Create message content
+  let messageContent;
   if (typeof content === 'object') {
     const entryDiv = document.createElement("div");
     entryDiv.classList.add("site-entry");
@@ -511,23 +529,95 @@ function addMessageToChat(sender, content) {
     entryDiv.appendChild(urlDiv);
     entryDiv.appendChild(detailsDiv);
     messageElement.appendChild(entryDiv);
+    messageContent = content;
   } else {
     if (content.startsWith("✓")) {
       messageElement.classList.add("success-message");
     }
     messageElement.textContent = content;
+    messageContent = content;
   }
 
   // Add timestamp
+  const now = new Date();
   const timeDiv = document.createElement("div");
   timeDiv.classList.add("message-time");
-  const now = new Date();
   timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   messageElement.appendChild(timeDiv);
 
   chatResults.appendChild(messageElement);
+  
+  // Save to chat history
+  saveChatMessage({
+    sender,
+    content: messageContent,
+    timestamp: now.toISOString()
+  });
+
   setTimeout(() => {
     messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, 100);
+}
+
+function saveChatMessage(message) {
+  chrome.storage.local.get(CHAT_HISTORY_KEY, (data) => {
+    let chatHistory = data[CHAT_HISTORY_KEY] || [];
+    chatHistory.push(message);
+    
+    // Keep only the last MAX_CHAT_HISTORY messages
+    if (chatHistory.length > MAX_CHAT_HISTORY) {
+      chatHistory = chatHistory.slice(-MAX_CHAT_HISTORY);
+    }
+    
+    chrome.storage.local.set({ [CHAT_HISTORY_KEY]: chatHistory });
+  });
+}
+
+function loadChatHistory() {
+  chrome.storage.local.get(CHAT_HISTORY_KEY, (data) => {
+    const chatHistory = data[CHAT_HISTORY_KEY] || [];
+    const chatResults = document.getElementById("chatResults");
+    chatResults.innerHTML = ''; // Clear existing messages
+    
+    chatHistory.forEach(message => {
+      const messageElement = document.createElement("div");
+      messageElement.classList.add("chat-message", `${message.sender}-message`);
+      
+      if (typeof message.content === 'object') {
+        const entryDiv = document.createElement("div");
+        entryDiv.classList.add("site-entry");
+
+        const urlDiv = document.createElement("div");
+        urlDiv.classList.add("site-url");
+        urlDiv.textContent = message.content.site_url;
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.classList.add("site-details");
+        detailsDiv.textContent = `${message.content.settings}\n${message.content.notes}`;
+
+        entryDiv.appendChild(urlDiv);
+        entryDiv.appendChild(detailsDiv);
+        messageElement.appendChild(entryDiv);
+      } else {
+        if (message.content.startsWith("✓")) {
+          messageElement.classList.add("success-message");
+        }
+        messageElement.textContent = message.content;
+      }
+      
+      const timeDiv = document.createElement("div");
+      timeDiv.classList.add("message-time");
+      const messageDate = new Date(message.timestamp);
+      timeDiv.textContent = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      messageElement.appendChild(timeDiv);
+      
+      chatResults.appendChild(messageElement);
+    });
+    
+    // Scroll to bottom after loading history
+    if (chatResults.lastElementChild) {
+      chatResults.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  });
 }
 
