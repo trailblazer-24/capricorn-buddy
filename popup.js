@@ -202,20 +202,125 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         break;
 
-      
-        case 'gyaan':
-          // New 'advice' command logic
-          fetch('https://api.adviceslip.com/advice', {
-            method: 'GET',
+
+      case 'gyaan':
+        // New 'advice' command logic
+        fetch('https://api.adviceslip.com/advice', {
+          method: 'GET',
+        })
+          .then(response => response.json())
+          .then(data => {
+            addMessageToChat("bot", data.slip.advice);  // data.slip.advice contains the advice
           })
-            .then(response => response.json())
-            .then(data => {
-              addMessageToChat("bot", data.slip.advice);  // data.slip.advice contains the advice
-            })
-            .catch(error => {
-              addMessageToChat("bot", "Sorry, I couldn't fetch advice right now. Try again later!");
-            });
-          break;
+          .catch(error => {
+            addMessageToChat("bot", "Sorry, I couldn't fetch advice right now. Try again later!");
+          });
+        break;
+
+
+      case 'cat':
+        // New 'cat' command logic
+        fetch('https://catfact.ninja/fact', {
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            addMessageToChat("bot", data.fact);
+          })
+          .catch(error => {
+            addMessageToChat("bot", "Sorry, I couldn't fetch a cat fact right now. Try again later!");
+          });
+        break;
+
+
+      case 'poke':
+        // New 'poke' command logic
+        const randomId = Math.floor(Math.random() * 898) + 1; // Random Pokémon ID between 1 and 898 (total number of Pokémon in the API)
+
+        fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Fetch additional data for flavor text (Pokémon's description)
+            fetch(data.species.url)
+              .then(response => response.json())
+              .then(speciesData => {
+                const flavorText = speciesData.flavor_text_entries.find(entry => entry.language.name === 'en')?.flavor_text || "No description available.";
+
+                const pokeFact = `Did you know? ${data.name.charAt(0).toUpperCase() + data.name.slice(1)} is a Pokémon known for its ${data.types.map(type => type.type.name).join(', ')} type(s). Here's a fun fact: ${flavorText}`;
+                addMessageToChat("bot", pokeFact);
+              })
+              .catch(error => {
+                addMessageToChat("bot", "Sorry, I couldn't fetch a Pokémon fact right now. Try again later!");
+              });
+          })
+          .catch(error => {
+            addMessageToChat("bot", "Sorry, I couldn't fetch a Pokémon fact right now. Try again later!");
+          });
+        break;
+
+
+      case 'trivia':
+        // New 'trivia' command logic
+        fetch('https://opentdb.com/api.php?amount=1&category=18', {
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            const triviaQuestion = data.results[0];
+            const question = triviaQuestion.question;
+            const correctAnswer = triviaQuestion.correct_answer;
+            const incorrectAnswers = triviaQuestion.incorrect_answers.join(', ');
+
+            const triviaFact = `Here's a trivia question: ${question}\n\nPossible answers: ${incorrectAnswers}, and the correct answer is: ${correctAnswer}`;
+            addMessageToChat("bot", triviaFact);
+          })
+          .catch(error => {
+            addMessageToChat("bot", "Sorry, I couldn't fetch a trivia question right now. Try again later!");
+          });
+        break;
+
+
+      case 'activity':
+        // New 'activity' command logic
+        fetch('https://bored-api.appbrewery.com/random', {
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            const activity = data.activity;
+            const type = data.type;
+            const participants = data.participants;
+            const price = data.price;
+            const link = data.link || "No link available"; // Check if there's a link provided
+
+            const activityFact = `
+                Here's a random activity for you:
+                Activity: ${activity}
+                Type: ${type}
+                Participants: ${participants}
+                Price (0 = free, 1 = low, 2 = medium, 3 = high): ${price}
+                Link: ${link}
+              `;
+            addMessageToChat("bot", activityFact);
+          })
+          .catch(error => {
+            addMessageToChat("bot", "Sorry, I couldn't fetch a random activity right now. Try again later!");
+          });
+        break;
+
+
+
+
 
       default:
         addMessageToChat("bot", `Unknown command. Type !help to see available commands.`);
@@ -297,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     const task = todoInput.value;
     const priority = document.getElementById("todoPriority").value;
-    
+
     chrome.storage.local.get("todos", (data) => {
       const todos = data.todos || [];
       todos.push({
@@ -307,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
         completed: false,
         createdAt: new Date().toISOString()
       });
-      
+
       chrome.storage.local.set({ todos }, () => {
         todoForm.reset();
         loadTodos();
@@ -322,7 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.local.get("todos", (data) => {
       const todos = data.todos || [];
       todoList.innerHTML = "";
-      
+
       const filteredTodos = todos.filter(todo => {
         if (currentFilter === "completed") return todo.completed;
         if (currentFilter === "pending") return !todo.completed;
@@ -341,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
       filteredTodos.forEach(todo => {
         const todoItem = document.createElement("div");
         todoItem.className = `todo-item ${todo.completed ? 'completed' : ''} priority-${todo.priority}`;
-        
+
         todoItem.innerHTML = `
           <div class="todo-checkbox">
             <input 
@@ -362,19 +467,19 @@ document.addEventListener("DOMContentLoaded", () => {
             </svg>
           </button>
         `;
-        
+
         // Handle checkbox change
         const checkbox = todoItem.querySelector('input[type="checkbox"]');
         checkbox.addEventListener('change', () => {
           toggleTodoComplete(todo.id);
         });
-        
+
         // Handle delete button
         const deleteBtn = todoItem.querySelector('.delete-todo');
         deleteBtn.addEventListener('click', () => {
           deleteTodo(todo.id);
         });
-        
+
         todoList.appendChild(todoItem);
       });
 
@@ -388,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const todos = data.todos || [];
       const totalTasks = todos.length;
       const completedTasks = todos.filter(todo => todo.completed).length;
-      
+
       document.getElementById("totalTasks").textContent = totalTasks;
       document.getElementById("completedTasks").textContent = completedTasks;
     });
@@ -398,10 +503,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function toggleTodoComplete(id) {
     chrome.storage.local.get("todos", (data) => {
       const todos = data.todos || [];
-      const updatedTodos = todos.map(todo => 
+      const updatedTodos = todos.map(todo =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       );
-      
+
       chrome.storage.local.set({ todos: updatedTodos }, () => {
         loadTodos();
         updateTodoStats();
@@ -414,7 +519,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.local.get("todos", (data) => {
       const todos = data.todos || [];
       const updatedTodos = todos.filter(todo => todo.id !== id);
-      
+
       chrome.storage.local.set({ todos: updatedTodos }, () => {
         loadTodos();
         updateTodoStats();
@@ -546,7 +651,7 @@ function addMessageToChat(sender, content) {
   messageElement.appendChild(timeDiv);
 
   chatResults.appendChild(messageElement);
-  
+
   // Save to chat history
   saveChatMessage({
     sender,
@@ -563,12 +668,12 @@ function saveChatMessage(message) {
   chrome.storage.local.get(CHAT_HISTORY_KEY, (data) => {
     let chatHistory = data[CHAT_HISTORY_KEY] || [];
     chatHistory.push(message);
-    
+
     // Keep only the last MAX_CHAT_HISTORY messages
     if (chatHistory.length > MAX_CHAT_HISTORY) {
       chatHistory = chatHistory.slice(-MAX_CHAT_HISTORY);
     }
-    
+
     chrome.storage.local.set({ [CHAT_HISTORY_KEY]: chatHistory });
   });
 }
@@ -578,11 +683,11 @@ function loadChatHistory() {
     const chatHistory = data[CHAT_HISTORY_KEY] || [];
     const chatResults = document.getElementById("chatResults");
     chatResults.innerHTML = ''; // Clear existing messages
-    
+
     chatHistory.forEach(message => {
       const messageElement = document.createElement("div");
       messageElement.classList.add("chat-message", `${message.sender}-message`);
-      
+
       if (typeof message.content === 'object') {
         const entryDiv = document.createElement("div");
         entryDiv.classList.add("site-entry");
@@ -604,16 +709,16 @@ function loadChatHistory() {
         }
         messageElement.textContent = message.content;
       }
-      
+
       const timeDiv = document.createElement("div");
       timeDiv.classList.add("message-time");
       const messageDate = new Date(message.timestamp);
       timeDiv.textContent = messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       messageElement.appendChild(timeDiv);
-      
+
       chatResults.appendChild(messageElement);
     });
-    
+
     // Scroll to bottom after loading history
     if (chatResults.lastElementChild) {
       chatResults.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'end' });

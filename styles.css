@@ -276,9 +276,24 @@ body {
 }
 
 .tab-button.active {
-  background-color: var(--button-bg);
-  color: var(--button-text);
+  background: linear-gradient(135deg, var(--button-bg), #6366f1); /* Apply the gradient */
+  color: var(--button-text); /* Ensure text color is not transparent */
+  border: none; /* Optional: if you want to remove borders */
+  padding: 10px 20px; /* Optional: Adjust padding for better appearance */
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  gap: 10px; /* Adjust gap between icon and text */
 }
+
+.tab-button.active .icon {
+  stroke: var(--button-text); /* Ensure the icon color matches the text */
+}
+
+.tab-button.active span {
+  font-weight: bold; /* Optional: Add styling for the text */
+}
+
 
 .tab-button .icon {
   width: 20px;
@@ -872,7 +887,7 @@ button:disabled {
 /* Sidebar Footer */
 .sidebar-footer {
   margin-top: auto;
-  padding: 16px 0;
+  /* padding: 16px 0; */
   text-align: center;
   font-size: 12px;
   color: var(--secondary-text);
@@ -910,6 +925,7 @@ button:disabled {
   background: none;
   box-shadow: none;
   padding: 12px;
+
 }
 
 .search-wrapper input:focus {
@@ -1028,7 +1044,9 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--button-bg);
+  background: linear-gradient(135deg, var(--button-bg), #6366f1); /* Apply the gradient */
+  color: var(--button-text); /* Ensure text color is not transparent */
+  border: none; /* Optional: if you want to remove borders */
   color: var(--button-text);
   border-radius: 8px;
   font-size: 14px;
