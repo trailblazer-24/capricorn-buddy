@@ -177,6 +177,7 @@ body {
   animation: wave 2s ease-in-out infinite;
   display: inline-block;
   transform-origin: 70% 70%;
+  z-index: 10000;
 }
 
 .status {
@@ -306,6 +307,7 @@ body {
   padding: 24px;
   overflow-y: auto;
   overflow-x: hidden;
+  height: 100%
 }
 
 /* Update the theme toggle button */
@@ -563,23 +565,88 @@ input, textarea, select {
   font-family: 'Inter', sans-serif;
 }
 
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+#searchTab {
+  height: 100%;
+  position: relative;
+  padding-bottom: 80px; /* Space for input container */
+  padding-left: 0px;  
+}
+
 /* Update the chat container for the new layout */
 #chatContainer {
   flex: 1;
-  overflow-y: auto;
-  margin-bottom: 16px;
-  padding: 12px;
+  overflow-y: hidden;
+  margin-bottom: 6px;
   background-color: var(--bg-color);
   border-radius: 12px;
   border: 1px solid var(--input-border);
+  /* position: relative; */
+  height: calc(100% - 160px);
+  top: 20px;
+}
+
+#chatResults {
+  overflow-y: auto; /* Enable scrolling for chatResults */
+  height: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 #chatInputContainer {
   display: flex;
   gap: 8px;
   padding: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
   background: var(--bg-color);
 }
+
+.fixed-bottom {
+  position: fixed; /* Fixes the position */
+  bottom: 0; /* Aligns to the bottom of the viewport */
+  left: 233px; /* Aligns to the left */
+  right: 0; /* Aligns to the right */
+  background-color: var(--bg-color); /* Ensure it matches the background */
+  padding: 8px; /* Add some padding */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for depth */
+  z-index: 1000; /* Ensure it stays above other content */
+}
+
+/* .fixed-chat {
+  position:fixed;
+  bottom: 100px;
+  left: 233px;
+  right:0;
+  padding:8px;
+}
+
+.results{
+  left: 233px;
+  right:0;
+} */
 
 input, textarea, select, button {
   font-size: 15px;
@@ -807,7 +874,7 @@ button:disabled {
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: var(--success);
+  background-color: #4CAF50; /* Changed to a more vibrant green */
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -816,7 +883,9 @@ button:disabled {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 2000;
   animation: slideDown 0.3s ease;
+  border: 1px solid #3e8e41; /* Added a border for better contrast */
 }
+
 
 .alert-message.fade-out {
   animation: slideUp 0.3s ease forwards;
@@ -914,7 +983,7 @@ button:disabled {
   gap: 8px;
   width: 100%;
   background-color: var(--input-bg);
-  border-radius: 12px;
+  border-radius: 50px;
   padding: 4px;
   border: 1px solid var(--input-border);
 }
@@ -935,13 +1004,15 @@ button:disabled {
 .search-button {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  transition: all 0.2s ease;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background-color: #0084ff;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .search-button:hover {
@@ -949,9 +1020,10 @@ button:disabled {
 }
 
 .search-button .icon {
-  width: 16px;
-  height: 16px;
+  width: 70%; /* Set relative size */
+  height: 70%; /* Ensure it scales properly within the button */
 }
+
 
 /* Save Form Styles */
 .save-site-container {

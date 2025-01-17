@@ -57,14 +57,13 @@
         <div id="chatContainer">
           <div id="chatResults"></div>
         </div>
-        <div id="chatInputContainer">
+        <div id="chatInputContainer" class="fixed-bottom">
           <div class="search-wrapper">
             <input type="text" id="searchInput" placeholder="Search or type a command...">
             <button id="searchBtn" class="search-button">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2.5 12h19m-3-3l3 3-3 3"/>
+                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke-linejoin="round" stroke-linecap="round"/>
               </svg>
-              <span>Send</span>
             </button>
           </div>
         </div>
@@ -78,28 +77,28 @@
           </div>
           <form id="saveSiteForm" class="save-form">
             <div class="form-group">
-              <label for="siteUrl">Site URL</label>
+              <!-- <label for="siteUrl">Site URL</label> -->
               <input 
-                type="url" 
+                type="text" 
                 id="siteUrl" 
                 placeholder="https://example.com" 
                 required 
               />
             </div>
             <div class="form-group">
-              <label for="siteSettings">Settings</label>
+              <!-- <label for="siteSettings">Settings</label> -->
               <input 
                 type="text" 
                 id="siteSettings" 
-                placeholder="Enter site settings" 
+                placeholder="Class 3 Individual Sign" 
                 required 
               />
             </div>
             <div class="form-group">
-              <label for="siteNotes">Notes</label>
+              <!-- <label for="siteNotes">Notes</label> -->
               <textarea 
                 id="siteNotes" 
-                placeholder="Enter additional notes" 
+                placeholder="Enter additional notes and settings" 
                 rows="3"
                 required
               ></textarea>

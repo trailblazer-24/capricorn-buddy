@@ -353,7 +353,14 @@ document.addEventListener("DOMContentLoaded", () => {
       chrome.storage.local.set({ siteData }, () => {
         event.target.reset();
         submitBtn.disabled = false;
-        addMessageToChat("bot", "✓ Site saved successfully");
+        const alertMessage = document.createElement("div");
+          alertMessage.className = "alert-message";
+          alertMessage.textContent = `Yumm! Site saved successfully!`;
+          document.body.appendChild(alertMessage);
+          setTimeout(() => {
+            alertMessage.classList.add('fade-out');
+            setTimeout(() => alertMessage.remove(), 300);
+          }, 3000);
       });
     });
   });
@@ -417,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
         todoForm.reset();
         loadTodos();
         updateTodoStats();
-        addMessageToChat("bot", "✓ Task added successfully");
+        // addMessageToChat("bot", "✓ Task added successfully");
       });
     });
   });
@@ -523,7 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
       chrome.storage.local.set({ todos: updatedTodos }, () => {
         loadTodos();
         updateTodoStats();
-        addMessageToChat("bot", "✓ Task deleted successfully");
+        // addMessageToChat("bot", "✓ Task deleted successfully");
       });
     });
   }
