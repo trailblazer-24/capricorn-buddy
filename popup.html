@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="lib/xlsx.full.min.js"></script>
 </head>
+
 <body>
   <div class="app-container">
     <nav class="sidebar">
@@ -25,29 +27,30 @@
       <div class="tab-container">
         <button class="tab-button active" data-tab="search">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <span>Search</span>
         </button>
         <button class="tab-button" data-tab="save">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14"/>
+            <path d="M12 5v14M5 12h14" />
           </svg>
           <span>Add Site</span>
         </button>
         <button class="tab-button" data-tab="todo">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
           </svg>
           <span>Todo List</span>
         </button>
       </div>
       <div class="sidebar-footer">
-        <p>Made with <span class="heart">❤️</span> by<br/>Biswajit</p>
+        <p>Made with <span class="heart">❤️</span> by<br />Biswajit</p>
       </div>
       <button id="hamburgerBtn" class="theme-toggle">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 7H4M20 12H4M20 17H4"/>
+          <path d="M20 7H4M20 12H4M20 17H4" />
         </svg>
       </button>
     </nav>
@@ -55,20 +58,28 @@
     <main class="main-content">
       <div id="searchTab" class="tab-content active">
         <div id="chatContainer">
-          <div id="chatResults"></div>
+          <div id="chatResults">
+            <div id="typingIndicator" class="ticontainer" style="display: none;">
+              <div class="tiblock">
+                <div class="tidot"></div>
+                <div class="tidot"></div>
+                <div class="tidot"></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div id="chatInputContainer" class="fixed-bottom">
           <div class="search-wrapper">
             <input type="text" id="searchInput" placeholder="Search or type a command...">
             <button id="searchBtn" class="search-button">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke-linejoin="round" stroke-linecap="round" />
               </svg>
             </button>
           </div>
         </div>
       </div>
-      
+
       <div id="saveTab" class="tab-content">
         <div class="save-site-container">
           <div class="save-site-header">
@@ -78,34 +89,19 @@
           <form id="saveSiteForm" class="save-form">
             <div class="form-group">
               <!-- <label for="siteUrl">Site URL</label> -->
-              <input 
-                type="text" 
-                id="siteUrl" 
-                placeholder="https://example.com" 
-                required 
-              />
+              <input type="text" id="siteUrl" placeholder="https://example.com" required />
             </div>
             <div class="form-group">
               <!-- <label for="siteSettings">Settings</label> -->
-              <input 
-                type="text" 
-                id="siteSettings" 
-                placeholder="Class 3 Individual Sign" 
-                required 
-              />
+              <input type="text" id="siteSettings" placeholder="Class 3 Individual Sign" required />
             </div>
             <div class="form-group">
               <!-- <label for="siteNotes">Notes</label> -->
-              <textarea 
-                id="siteNotes" 
-                placeholder="Enter additional notes and settings" 
-                rows="3"
-                required
-              ></textarea>
+              <textarea id="siteNotes" placeholder="Enter additional notes and settings" rows="3" required></textarea>
             </div>
             <button type="submit" class="submit-button">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 13l4 4L19 7"/>
+                <path d="M5 13l4 4L19 7" />
               </svg>
               Save Site
             </button>
@@ -128,7 +124,7 @@
               <button type="submit">Add Task</button>
             </div>
           </form>
-          
+
           <div class="todo-filters">
             <button class="filter-btn active" data-filter="all">
               All
@@ -140,7 +136,7 @@
               Completed
             </button>
           </div>
-      
+
           <div class="todo-stats">
             <div class="stat-item">
               <span class="stat-label">Total Tasks:</span>
@@ -151,39 +147,39 @@
               <span id="completedTasks">0</span>
             </div>
           </div>
-      
+
           <div id="todoList" class="todo-list"></div>
         </div>
       </div>
-    
+
     </main>
   </div>
-  
+
   <div id="hamburgerMenu" class="hamburger-menu">
-  <div class="hamburger-overlay"></div>
-  <div class="hamburger-content">
-    <button id="closeHamburgerBtn" class="close-btn">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
-    <h2>Settings</h2>
-    <div class="menu-item">
-      <label for="themeSelect">Theme</label>
-      <select id="themeSelect" required>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="blue">Blue</option>
-      </select>
+    <div class="hamburger-overlay"></div>
+    <div class="hamburger-content">
+      <button id="closeHamburgerBtn" class="close-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+      <h2>Settings</h2>
+      <div class="menu-item">
+        <label for="themeSelect">Theme</label>
+        <select id="themeSelect" required>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="blue">Blue</option>
+        </select>
+      </div>
+      <button id="exportButton" class="menu-button">Export Settings</button>
+      <button id="importButton" class="menu-button">Import Settings</button>
+      <input type="file" id="importFile" accept=".xlsx" style="display: none;">
+
     </div>
-    <button id="exportButton" class="menu-button">Export Settings</button>
-    <button id="importButton" class="menu-button">Import Settings</button>
-    <input type="file" id="importFile" accept=".xlsx" style="display: none;">
-    
   </div>
-</div>
-  
+
   <script src="popup.js"></script>
 </body>
-</html>
 
+</html>

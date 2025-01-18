@@ -177,7 +177,7 @@ body {
   animation: wave 2s ease-in-out infinite;
   display: inline-block;
   transform-origin: 70% 70%;
-  z-index: 10000;
+  z-index: 2000;
 }
 
 .status {
@@ -353,6 +353,15 @@ body {
 }
 
 /* Todo List Styles */
+
+#todoForm button[type="submit"]{
+  background: linear-gradient(135deg, var(--button-bg), #6366f1);
+}
+
+
+#todoTab{
+  padding-top: 40px;
+}
 .todo-container {
   display: flex;
   flex-direction: column;
@@ -399,6 +408,8 @@ body {
   background: none;
   color: var(--text-color);
   padding: 8px 16px;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
 .filter-btn:hover {
@@ -407,7 +418,7 @@ body {
 }
 
 .filter-btn.active {
-  background-color: var(--button-bg);
+  background: linear-gradient(135deg, var(--button-bg), #6366f1);
   color: var(--button-text);
 }
 
@@ -784,7 +795,7 @@ button:disabled {
   width: 100%;
   height: 100%;
   transition: right 0.3s ease;
-  z-index: 1000;
+  z-index: 3000;
   display: flex;
 }
 
@@ -1143,29 +1154,59 @@ button:disabled {
   height: 16px;
 }
 
-/* Dark theme specific adjustments */
-/* body.dark-theme .save-site-container {
-  background-color: #111111;
+.tiblock {
+  align-items: center;
+  display: flex;
+  height: 17px;
 }
 
-body.dark-theme .save-form input,
-body.dark-theme .save-form textarea {
-  background-color: #1a1a1a;
-  border-color: #333333;
+.ticontainer .tidot {
+  background-color: #90949c; /* Change this color if needed */
 }
 
-body.dark-theme .save-form input:focus,
-body.dark-theme .save-form textarea:focus {
-  border-color: var(--button-bg);
-  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.1);
+.tidot {
+  -webkit-animation: mercuryTypingAnimation 1.5s infinite ease-in-out;
+  animation: mercuryTypingAnimation 1.5s infinite ease-in-out; 
+  border-radius: 2px;
+  display: inline-block;
+  height: 4px;
+  margin-right: 2px;
+  width: 4px;
 }
 
-body.dark-theme .save-form label {
-  color: #e0e0e0;
+@-webkit-keyframes mercuryTypingAnimation {
+  0% {
+      -webkit-transform: translateY(0px);
+  }
+  28% {
+      -webkit-transform: translateY(-5px);
+  }
+  44% {
+      -webkit-transform: translateY(0px);
+  }
 }
 
-body.dark-theme .save-site-subtitle {
-  color: #888888;
-} */
+@keyframes mercuryTypingAnimation { /* Standard rule */
+  0% {
+      transform: translateY(0px);
+  }
+  28% {
+      transform: translateY(-5px);
+  }
+  44% {
+      transform: translateY(0px);
+  }
+}
 
-
+.tidot:nth-child(1) {
+  -webkit-animation-delay: 200ms;
+  animation-delay: 200ms;
+}
+.tidot:nth-child(2) {
+  -webkit-animation-delay: 300ms;
+  animation-delay: 300ms;
+}
+.tidot:nth-child(3) {
+  -webkit-animation-delay: 400ms;
+  animation-delay: 400ms;
+}

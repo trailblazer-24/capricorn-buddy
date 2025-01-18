@@ -17,6 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const hamburgerMenu = document.getElementById("hamburgerMenu");
   const hamburgerOverlay = document.querySelector(".hamburger-overlay");
 
+
+  // Array of error messages
+  const errorMessages = [
+    "Sorry, I couldn't fetch a trivia question right now. Try again later!",
+    "Oops! Something went wrong. Please try again.",
+    "I'm having a little trouble right now. Please bear with me!",
+    "Uh-oh! I can't seem to get that information. Try again later.",
+    "My circuits are a bit tangled. Please try again shortly!"
+  ];
+
   exportButton.addEventListener("click", exportSettings);
   importButton.addEventListener("click", () => importFile.click());
   importFile.addEventListener("change", importSettings);
@@ -87,7 +97,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Add the user message to the chat
-    addMessageToChat("user", searchValue);
+    if (searchValue.startsWith('!')) {
+
+    }
+    else {
+      addMessageToChat("user", searchValue);
+    }
 
     // Handle commands starting with '!'
     if (searchValue.startsWith('!')) {
@@ -119,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
           addMessageToChat("bot", entry);
         });
       } else {
-        addMessageToChat("bot", "No results found. Type 'all' to see all entries.");
+        addMessageToChat("bot", "Hein ji?");
       }
     } catch (error) {
       addMessageToChat("bot", "An error occurred while searching.");
@@ -136,13 +151,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     switch (cmd.toLowerCase()) {
       case 'name':
+
+
         if (args.length === 0) {
-          addMessageToChat("bot", "Please provide a name. Usage: !name your_name");
+          addMessageToChat("user", "!name");
+          addMessageToChat("bot", "Tusi apna naam toh batao ji. Aise: !name aapka_name");
           return;
         }
         const username = args.join(' ');
+        const welcomeMessages = [
+          `Ohoo ${username}, kya baat hai! Kitna pyaara naam hai. Welcome ji, welcome! ❤️`,
+          `Arre wah, ${username}, yeh naam toh bilkul stylish hai! Welcome ji, welcome! ❤️`,
+          `Wah, ${username}, aapka naam bilkul Bollywood style lag raha hai! Kya baat hai! ❤️`,
+          `Oho, ${username}, kitna pyaara naam hai! Dil se welcome! ❤️`,
+          `${username}, kya naam chhupa ke rakha tha! Welcome ji, welcome! ❤️`,
+          `${username}, aapka naam sunke lagta hai zindagi set ho gayi! Welcome ji! ❤️`,
+          `Kya baat hai ${username}, yeh naam toh ekdum classy hai! Welcome ji! ❤️`,
+          `Wah ${username}, aapka naam sunke toh dil khush ho gaya! Welcome ji! ❤️`
+        ];
         chrome.storage.local.set({ username }, () => {
-          addMessageToChat("bot", `✓ Name saved! Welcome, ${username}! 😊`);
+          addMessageToChat("user", `!name ${username}`)
+          const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+          addMessageToChat("bot", randomMessage);
           const alertMessage = document.createElement("div");
           alertMessage.className = "alert-message";
           alertMessage.textContent = `Name updated to: ${username}`;
@@ -155,18 +185,46 @@ document.addEventListener("DOMContentLoaded", () => {
         break;
 
       case 'help':
+
+        const helpMessages = ["I’m a bit lost, can you help me out?",
+          "What can I do here? Show me the commands!",
+          "Help me explore all the features!",
+          "I need some guidance. What commands do you have?",
+          "I’m looking for some instructions, please!"];
+
+
+        const randomHelpMessage = helpMessages[Math.floor(Math.random() * helpMessages.length)];
+
+
+        addMessageToChat("user", randomHelpMessage);
         addMessageToChat("bot",
-          `Available commands:
-  • !name your_name - Set your name
-  • !help - Show this help message
-  • !all - Show all saved sites
-  • !joke - Listen a joke
-  • !gyaan - Get a random advice
-  
-  Type any command to try it out!`);
+          `Available Commands:
+
+ • !name - Set your name and personalize your experience
+ • !help - Display this helpful guide (you’re here right now!)
+ • !all - Show all saved sites
+ • !joke - Hear a funny joke to brighten your day!
+ • !gyaan - Get a random piece of advice to ponder on
+ • !cat - Receive a random cat fact (because who doesn’t love cats?)
+ • !poke - Learn a random Pokémon fact!
+ • !quiz - Test your knowledge with a tech quiz question
+ • !bored - Find an activity suggestion to combat boredom
+
+Type any of the above commands to try them out and have some fun! 🎉`);
         break;
 
       case 'all':
+
+
+        const allMessages = ["Show me all the cool sites I’ve saved!",
+          "Let’s check out all my saved websites.",
+          "I want to see all the sites I’ve saved!",
+          "What websites do I have in my collection?",
+          "Can you list all the sites I’ve saved till now?"];
+
+        const randomAllMessage = allMessages[Math.floor(Math.random() * allMessages.length)];
+
+        addMessageToChat("user", randomAllMessage);
         chrome.storage.local.get(["database", "siteData"], async (storageData) => {
           const database = storageData.database || [];
           const siteData = storageData.siteData || [];
@@ -175,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const combinedData = [...siteData, ...database, ...databaseJson];
 
           if (combinedData.length) {
-            addMessageToChat("bot", "All saved sites:");
+            addMessageToChat("bot", "Ye lo ji:");
             combinedData.forEach(entry => {
               addMessageToChat("bot", entry);
             });
@@ -187,7 +245,16 @@ document.addEventListener("DOMContentLoaded", () => {
         break;
 
       case 'joke':
-        // New 'joke' command logic
+
+        const jokeMessages = ["Tell me a joke, make me laugh!",
+          "I need a good laugh, can you crack a joke?",
+          "Hit me with your best joke!",
+          "I’m ready for some humor, bring on the jokes!",
+          "Make me smile with a funny joke!"];
+        const randomJokeMessage = jokeMessages[Math.floor(Math.random() * jokeMessages.length)];
+
+        addMessageToChat("user", randomJokeMessage);
+
         fetch('https://icanhazdadjoke.com/', {
           headers: {
             'Accept': 'application/json'
@@ -198,13 +265,22 @@ document.addEventListener("DOMContentLoaded", () => {
             addMessageToChat("bot", data.joke);
           })
           .catch(error => {
-            addMessageToChat("bot", "Sorry, I couldn't fetch a joke right now. Try again later!");
+            addMessageToChat("bot", "Mood off hai mera, no jokes for now!");
           });
         break;
 
 
       case 'gyaan':
-        // New 'advice' command logic
+
+
+        const gyaanMessages = ["Time for some gyaan (wisdom)!",
+          "Give me a piece of wisdom to ponder.",
+          "I need some advice. What do you have for me?",
+          "What life lesson do you have for me today?",
+          "Give me some gyaan, I’m all ears!"];
+
+        const randomGyaanMessage = gyaanMessages[Math.floor(Math.random() * gyaanMessages.length)];
+        addMessageToChat("user", randomGyaanMessage);
         fetch('https://api.adviceslip.com/advice', {
           method: 'GET',
         })
@@ -213,13 +289,22 @@ document.addEventListener("DOMContentLoaded", () => {
             addMessageToChat("bot", data.slip.advice);  // data.slip.advice contains the advice
           })
           .catch(error => {
-            addMessageToChat("bot", "Sorry, I couldn't fetch advice right now. Try again later!");
+            addMessageToChat("bot", "I'm in deep thought... and need a nap! 😴 Come back for advice soon!");
           });
         break;
 
 
       case 'cat':
-        // New 'cat' command logic
+
+        const catMessages = ["Time for a random cat fact!",
+          "I want to hear a cool cat fact!",
+          "Hit me with a fun cat fact, I’m all ears!",
+          "Let’s hear some cat knowledge!",
+          "I’m ready for a purrfect cat fact!"];
+
+        const randomCatMessage = catMessages[Math.floor(Math.random() * catMessages.length)];
+
+        addMessageToChat("user", randomCatMessage);
         fetch('https://catfact.ninja/fact', {
           headers: {
             'Accept': 'application/json'
@@ -227,16 +312,27 @@ document.addEventListener("DOMContentLoaded", () => {
         })
           .then(response => response.json())
           .then(data => {
-            addMessageToChat("bot", data.fact);
+            const fact = data.fact;
+            const catFact = `Meow Meow🐾\n${fact}`;
+            addMessageToChat("bot", catFact);
           })
           .catch(error => {
-            addMessageToChat("bot", "Sorry, I couldn't fetch a cat fact right now. Try again later!");
+            addMessageToChat("bot", "Oops, the cat’s paws are too tired to fetch a fact right now! Try again later! 🐾");
           });
         break;
 
 
       case 'poke':
-        // New 'poke' command logic
+
+        const pokeMessages = ["Time to learn about Pokémon, hit me with a random fact!",
+          "Give me a fun Pokémon fact!",
+          "Show me a random Pokémon tidbit!",
+          "What cool Pokémon fact do you have for me today?",
+          "I’m all about Pokémon today, give me a random fact!"];
+
+        const randomPokeMessage = pokeMessages[Math.floor(Math.random() * pokeMessages.length)];
+        addMessageToChat("user", randomPokeMessage);
+
         const randomId = Math.floor(Math.random() * 898) + 1; // Random Pokémon ID between 1 and 898 (total number of Pokémon in the API)
 
         fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`, {
@@ -252,21 +348,28 @@ document.addEventListener("DOMContentLoaded", () => {
               .then(speciesData => {
                 const flavorText = speciesData.flavor_text_entries.find(entry => entry.language.name === 'en')?.flavor_text || "No description available.";
 
-                const pokeFact = `Did you know? ${data.name.charAt(0).toUpperCase() + data.name.slice(1)} is a Pokémon known for its ${data.types.map(type => type.type.name).join(', ')} type(s). Here's a fun fact: ${flavorText}`;
+                const pokeFact = `Pika Pika! \nDid you know? ${data.name.charAt(0).toUpperCase() + data.name.slice(1)} is a ${data.types.map(type => type.type.name).join(', ')}(type) Pokémon. Here's a fun fact about ${data.name.charAt(0).toUpperCase() + data.name.slice(1)}: ${flavorText}`;
                 addMessageToChat("bot", pokeFact);
               })
               .catch(error => {
-                addMessageToChat("bot", "Sorry, I couldn't fetch a Pokémon fact right now. Try again later!");
+                addMessageToChat("bot", "Pika Pika \nI’m buffering... and buffering... maybe try again later!");
               });
           })
           .catch(error => {
-            addMessageToChat("bot", "Sorry, I couldn't fetch a Pokémon fact right now. Try again later!");
+            addMessageToChat("bot", "Pika Pika \nI’m buffering... and buffering... maybe try again later!");
           });
         break;
 
 
-      case 'trivia':
-        // New 'trivia' command logic
+      case 'quiz':
+
+        const quizMessages = ["I’m ready for a tech quiz question, bring it on!",
+          "Let’s see how much I know, hit me with a tech quiz!",
+          "Time to put my tech knowledge to the test!",
+          "Give me a challenge, let’s do a tech quiz!",
+          "I’m ready to answer a tech quiz question!"];
+        const randomQuizMessage = quizMessages[Math.floor(Math.random() * quizMessages.length)];
+        addMessageToChat("user", randomQuizMessage);
         fetch('https://opentdb.com/api.php?amount=1&category=18', {
           headers: {
             'Accept': 'application/json'
@@ -277,19 +380,43 @@ document.addEventListener("DOMContentLoaded", () => {
             const triviaQuestion = data.results[0];
             const question = triviaQuestion.question;
             const correctAnswer = triviaQuestion.correct_answer;
-            const incorrectAnswers = triviaQuestion.incorrect_answers.join(', ');
+            const options = [...triviaQuestion.incorrect_answers, correctAnswer];
 
-            const triviaFact = `Here's a trivia question: ${question}\n\nPossible answers: ${incorrectAnswers}, and the correct answer is: ${correctAnswer}`;
-            addMessageToChat("bot", triviaFact);
+            // Shuffle the options to randomize their order
+            options.sort(() => Math.random() - 0.5);
+
+            const triviaPrompt = `Here's an interesting question: ${question}\n\nOption A: ${options[0]}\nOption B: ${options[1]}\nOption C: ${options[2]}\nOption D: ${options[3]}\n\nThink about your answer while I reveal the correct one shortly!`;
+
+            // Display the question and options
+            addMessageToChat("bot", triviaPrompt);
+
+            // Set a delay to reveal the correct answer
+            setTimeout(() => {
+              const answerReveal = `The correct answer is: ${correctAnswer}`;
+              addMessageToChat("bot", answerReveal);
+            }, 15000); // 15-second delay before revealing the answer
           })
           .catch(error => {
-            addMessageToChat("bot", "Sorry, I couldn't fetch a trivia question right now. Try again later!");
+            addMessageToChat("bot", "Uh-oh! The quiz question went on strike. It will be back soon, promise!");
           });
         break;
 
 
-      case 'activity':
-        // New 'activity' command logic
+
+
+      case 'bored':
+
+        const boredMessages = ["I'm feeling a bit bored, can you suggest an activity?",
+          "I’m bored, suggest something fun to do!",
+          "Got any activity ideas? I need something to do!",
+          "Bored out of my mind, what should I do?",
+          "Give me an activity suggestion, I need some fun!",
+          "Help, I’m bored! What should I do next?"];
+
+
+        const randomBoredMessage = boredMessages[Math.floor(Math.random() * boredMessages.length)];
+        addMessageToChat("user", randomBoredMessage);
+
         fetch('https://bored-api.appbrewery.com/random', {
           headers: {
             'Accept': 'application/json'
@@ -303,23 +430,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const price = data.price;
             const link = data.link || "No link available"; // Check if there's a link provided
 
-            const activityFact = `
-                Here's a random activity for you:
-                Activity: ${activity}
-                Type: ${type}
-                Participants: ${participants}
-                Price (0 = free, 1 = low, 2 = medium, 3 = high): ${price}
-                Link: ${link}
-              `;
+            const activityFact = `🎉 Here's a fun activity for you 🎉\n\nActivity: ${activity}\nType: ${type}\nParticipants: ${participants} person(s)\nPrice: ${getPriceLevel(price)}\nLink: ${link}\n🎲 Feel free to give it a try and have some fun! 😊`;
+
             addMessageToChat("bot", activityFact);
           })
           .catch(error => {
-            addMessageToChat("bot", "Sorry, I couldn't fetch a random activity right now. Try again later!");
+            addMessageToChat("bot", "Uh-oh! The activity genie is on a break. While I wait for them to return, why not try something new? Take a walk, call a friend, dance like nobody's watching, or grab a snack? 😄");
           });
         break;
 
-
-
+        // Helper function to make the price more readable
+        function getPriceLevel(price) {
+          switch (price) {
+            case 0: return "💰 Free";
+            case 1: return "💵 Low cost";
+            case 2: return "💳 Medium cost";
+            case 3: return "💸 High cost";
+            default: return "🤔 Unknown";
+          }
+        }
 
 
       default:
@@ -354,20 +483,19 @@ document.addEventListener("DOMContentLoaded", () => {
         event.target.reset();
         submitBtn.disabled = false;
         const alertMessage = document.createElement("div");
-          alertMessage.className = "alert-message";
-          alertMessage.textContent = `Yumm! Site saved successfully!`;
-          document.body.appendChild(alertMessage);
-          setTimeout(() => {
-            alertMessage.classList.add('fade-out');
-            setTimeout(() => alertMessage.remove(), 300);
-          }, 3000);
+        alertMessage.className = "alert-message";
+        alertMessage.textContent = `Yumm! Site saved successfully!`;
+        document.body.appendChild(alertMessage);
+        setTimeout(() => {
+          alertMessage.classList.add('fade-out');
+          setTimeout(() => alertMessage.remove(), 300);
+        }, 3000);
       });
     });
   });
 
 
 
-  // Initial greeting
   // Load chat history instead of showing initial greeting
   loadChatHistory();
 
@@ -622,6 +750,8 @@ function formatDate(dateString) {
 function addMessageToChat(sender, content) {
   const chatResults = document.getElementById("chatResults");
   const messageElement = document.createElement("div");
+
+
   messageElement.classList.add("chat-message", `${sender}-message`);
 
   // Create message content
@@ -681,7 +811,9 @@ function saveChatMessage(message) {
       chatHistory = chatHistory.slice(-MAX_CHAT_HISTORY);
     }
 
-    chrome.storage.local.set({ [CHAT_HISTORY_KEY]: chatHistory });
+    chrome.storage.local.set({ [CHAT_HISTORY_KEY]: chatHistory }, () => {
+      console.log("Chat history updated:", chatHistory); // Debug log
+    });
   });
 }
 
@@ -732,4 +864,7 @@ function loadChatHistory() {
     }
   });
 }
+
+
+
 
