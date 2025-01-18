@@ -122,7 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (filtered.length) {
         filtered.forEach(entry => {
-          addMessageToChat("bot", entry);
+          
+          addMessageToChat("bot", `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`);
         });
       } else {
         addMessageToChat("bot", "Hein ji?");
@@ -224,9 +225,9 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           const combinedData = [...siteData, ...database, ...databaseJson];
 
           if (combinedData.length) {
-            addMessageToChat("bot", "Ye lo ji:");
+            addMessageToChat("bot", "Ye lo ji");
             combinedData.forEach(entry => {
-              addMessageToChat("bot", entry);
+              addMessageToChat("bot", `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`);
             });
           } else {
             addMessageToChat("bot", "No sites found in the database.");
