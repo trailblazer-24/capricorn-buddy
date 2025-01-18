@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const hamburgerMenu = document.getElementById("hamburgerMenu");
   const hamburgerOverlay = document.querySelector(".hamburger-overlay");
 
+  const snippetsList = document.getElementById("snippetsList");
+  const addSnippetButton = document.getElementById("addSnippetButton");
 
   exportButton.addEventListener("click", exportSettings);
   importButton.addEventListener("click", () => importFile.click());
@@ -651,6 +653,99 @@ Type any of the above commands to try them out and have some fun! 🎉`);
         updateTodoStats();
         // addMessageToChat("bot", "✓ Task deleted successfully");
       });
+    });
+  }
+
+  // Load snippets when the snippets tab is shown
+  document.querySelector('[data-tab="snippets"]').addEventListener('click', loadSnippets);
+
+  // Handle adding a new snippet
+  addSnippetButton.addEventListener("click", () => {
+    const snippetText = prompt("Enter your snippet text:");
+    if (snippetText) {
+      saveSnippet(snippetText);
+    }
+  });
+
+  // Function to save a new snippet
+  function saveSnippet(text) {
+    chrome.storage.local.get("snippets", (data) => {
+      const snippets = data.snippets || [];
+      snippets.push({ id: Date.now(), text });
+      chrome.storage.local.set({ snippets }, loadSnippets);
+    });
+  }
+
+  // Function to load and display snippets
+  function loadSnippets() {
+    chrome.storage.local.get("snippets", (data) => {
+      const snippets = data.snippets || [];
+      snippetsList.innerHTML = ""; // Clear existing snippets
+
+      snippets.forEach(snippet => {
+        const snippetItem = document.createElement("div");
+        snippetItem.className = "snippet-item";
+        snippetItem.innerHTML = `
+          <span class="snippet-text">${snippet.text}</span>
+          <button class="icon-button copy-snippet" data-id="${snippet.id}" title="Copy">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 2H6a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V6l-4-4z" />
+            </svg>
+          </button>
+          <button class="icon-button edit-snippet" data-id="${snippet.id}" title="Edit">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9v-9l-9 9zM3 21l3-3-2-2-3 3zM21 3l-3-3-2 2 3 3z" />
+            </svg>
+          </button>
+          <button class="icon-button delete-snippet" data-id="${snippet.id}" title="Delete">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        `;
+
+        // Handle copy button
+        snippetItem.querySelector(".copy-snippet").addEventListener("click", () => {
+          navigator.clipboard.writeText(snippet.text).then(() => {
+            addMessageToChat("bot", "Snippet copied to clipboard!");
+          });
+        });
+
+        // Handle edit button
+        snippetItem.querySelector(".edit-snippet").addEventListener("click", () => {
+          const newText = prompt("Edit your snippet text:", snippet.text);
+          if (newText) {
+            updateSnippet(snippet.id, newText);
+          }
+        });
+
+        // Handle delete button
+        snippetItem.querySelector(".delete-snippet").addEventListener("click", () => {
+          deleteSnippet(snippet.id);
+        });
+
+        snippetsList.appendChild(snippetItem);
+      });
+    });
+  }
+
+  // Function to update a snippet
+  function updateSnippet(id, newText) {
+    chrome.storage.local.get("snippets", (data) => {
+      const snippets = data.snippets || [];
+      const updatedSnippets = snippets.map(snippet => 
+        snippet.id === id ? { ...snippet, text: newText } : snippet
+      );
+      chrome.storage.local.set({ snippets: updatedSnippets }, loadSnippets);
+    });
+  }
+
+  // Function to delete a snippet
+  function deleteSnippet(id) {
+    chrome.storage.local.get("snippets", (data) => {
+      const snippets = data.snippets || [];
+      const updatedSnippets = snippets.filter(snippet => snippet.id !== id);
+      chrome.storage.local.set({ snippets: updatedSnippets }, loadSnippets);
     });
   }
 

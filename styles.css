@@ -319,6 +319,58 @@ body {
   height: 100%
 }
 
+/* Snippets Styles */
+.snippets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.snippets-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.snippets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px; /* Set a max height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.snippet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+}
+
+.snippet-text {
+  flex: 1;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  color: var(--button-bg);
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.icon-button:hover {
+  color: var(--button-hover);
+}
+
+.icon {
+  width: 20px; /* Set icon size */
+  height: 20px; /* Set icon size */
+}
+
 /* Update the theme toggle button */
 .theme-toggle {
   margin-top: auto;
