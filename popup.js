@@ -18,15 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const hamburgerOverlay = document.querySelector(".hamburger-overlay");
 
 
-  // Array of error messages
-  const errorMessages = [
-    "Sorry, I couldn't fetch a trivia question right now. Try again later!",
-    "Oops! Something went wrong. Please try again.",
-    "I'm having a little trouble right now. Please bear with me!",
-    "Uh-oh! I can't seem to get that information. Try again later.",
-    "My circuits are a bit tangled. Please try again shortly!"
-  ];
-
   exportButton.addEventListener("click", exportSettings);
   importButton.addEventListener("click", () => importFile.click());
   importFile.addEventListener("change", importSettings);
@@ -402,8 +393,6 @@ Type any of the above commands to try them out and have some fun! 🎉`);
         break;
 
 
-
-
       case 'bored':
 
         const boredMessages = ["I'm feeling a bit bored, can you suggest an activity?",
@@ -452,6 +441,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
 
 
       default:
+        addMessageToChat("user", command)
         addMessageToChat("bot", `Unknown command. Type !help to see available commands.`);
     }
   }
@@ -678,6 +668,12 @@ Type any of the above commands to try them out and have some fun! 🎉`);
 function exportSettings() {
   chrome.storage.local.get("siteData", (data) => {
     const siteData = data.siteData || [];
+
+    // Check if siteData is empty
+    if (siteData.length === 0) {
+      addMessageToChat("bot", "No data to export. Please save some sites first.");
+      return; // Exit the function if there's no data
+    }
 
     // Create a worksheet
     const ws = XLSX.utils.json_to_sheet(siteData);

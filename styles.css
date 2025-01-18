@@ -1031,8 +1031,9 @@ button:disabled {
 }
 
 .search-button .icon {
-  width: 70%; /* Set relative size */
-  height: 70%; /* Ensure it scales properly within the button */
+  width: 150%; /* Set relative size */
+  height: 150%; /* Ensure it scales properly within the button */
+  transform: scale(2);
 }
 
 
@@ -1210,3 +1211,26 @@ button:disabled {
   -webkit-animation-delay: 400ms;
   animation-delay: 400ms;
 }
+
+.minimal-download-link {
+  color: #007BFF; /* Blue text */
+  text-decoration: none; /* Remove underline */
+  font-size: 14px; /* Smaller font size */
+  border: 1px solid transparent; /* Invisible border for alignment */
+  transition: color 0.2s ease; /* Smooth transition for hover effect */
+  display: inline-flex; /* Align icon next to text */
+  align-items: center; /* Vertically center the icon with the text */
+}
+
+.minimal-download-link:hover {
+  color: #0056b3; /* Darker blue on hover */
+  
+}
+
+.download-icon {
+  margin-left: 6px; /* Small space between text and icon */
+  width: 16px; /* Set icon width */
+  height: 16px; /* Set icon height */
+  stroke: currentColor; /* Use current text color for stroke */
+}
+
