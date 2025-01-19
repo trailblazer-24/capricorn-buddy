@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const snippetsList = document.getElementById("snippetsList");
   const addSnippetButton = document.getElementById("addSnippetButton");
 
+  const snippetSearchInput = document.getElementById("snippetSearchInput");
+
   exportButton.addEventListener("click", exportSettings);
   importButton.addEventListener("click", () => importFile.click());
   importFile.addEventListener("change", importSettings);
@@ -124,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (filtered.length) {
         filtered.forEach(entry => {
-          
+
           addMessageToChat("bot", `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`);
         });
       } else {
@@ -142,6 +144,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleCommand(command) {
     const [cmd, ...args] = command.slice(1).split(' ');
+
+    // Save the user command to chat history
+    // addMessageToChat("user", command);
 
     switch (cmd.toLowerCase()) {
       case 'name':
@@ -180,11 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       case 'help':
 
-        const helpMessages = ["I’m a bit lost, can you help me out?",
+        const helpMessages = ["I'm a bit lost, can you help me out?",
           "What can I do here? Show me the commands!",
           "Help me explore all the features!",
           "I need some guidance. What commands do you have?",
-          "I’m looking for some instructions, please!"];
+          "I'm looking for some instructions, please!"];
 
 
         const randomHelpMessage = helpMessages[Math.floor(Math.random() * helpMessages.length)];
@@ -194,27 +199,26 @@ document.addEventListener("DOMContentLoaded", () => {
         addMessageToChat("bot",
           `Available Commands:
 
- • !name - Set your name and personalize your experience
- • !help - Display this helpful guide (you’re here right now!)
- • !all - Show all saved sites
- • !joke - Hear a funny joke to brighten your day!
- • !gyaan - Get a random piece of advice to ponder on
- • !cat - Receive a random cat fact (because who doesn’t love cats?)
- • !poke - Learn a random Pokémon fact!
- • !quiz - Test your knowledge with a tech quiz question
- • !bored - Find an activity suggestion to combat boredom
+• !name - Set your name and personalize your experience
+• !help - Display this helpful guide (you're here right now!)
+• !all - Show all saved sites
+• !joke - Hear a funny joke to brighten your day!
+• !gyaan - Get a random piece of advice to ponder on
+• !cat - Receive a random cat fact (because who doesn't love cats?)
+• !poke - Learn a random Pokémon fact!
+• !quiz - Test your knowledge with a tech quiz question
+• !bored - Find an activity suggestion to combat boredom
+• !clear - Clear your chat history
 
 Type any of the above commands to try them out and have some fun! 🎉`);
         break;
 
       case 'all':
-
-
-        const allMessages = ["Show me all the cool sites I’ve saved!",
-          "Let’s check out all my saved websites.",
-          "I want to see all the sites I’ve saved!",
+        const allMessages = ["Show me all the cool sites I've saved!",
+          "Let's check out all my saved websites.",
+          "I want to see all the sites I've saved!",
           "What websites do I have in my collection?",
-          "Can you list all the sites I’ve saved till now?"];
+          "Can you list all the sites I've saved till now?"];
 
         const randomAllMessage = allMessages[Math.floor(Math.random() * allMessages.length)];
 
@@ -227,10 +231,13 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           const combinedData = [...siteData, ...database, ...databaseJson];
 
           if (combinedData.length) {
-            addMessageToChat("bot", "Ye lo ji");
-            combinedData.forEach(entry => {
-              addMessageToChat("bot", `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`);
-            });
+            // Prepare all entries in a single message
+            const allEntries = combinedData.map(entry => 
+              `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`
+            ).join('\n\n');
+            
+           
+            addMessageToChat("bot", `Ye lo ji:\n\n${allEntries}`);
           } else {
             addMessageToChat("bot", "No sites found in the database.");
           }
@@ -243,7 +250,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
         const jokeMessages = ["Tell me a joke, make me laugh!",
           "I need a good laugh, can you crack a joke?",
           "Hit me with your best joke!",
-          "I’m ready for some humor, bring on the jokes!",
+          "I'm ready for some humor, bring on the jokes!",
           "Make me smile with a funny joke!"];
         const randomJokeMessage = jokeMessages[Math.floor(Math.random() * jokeMessages.length)];
 
@@ -271,7 +278,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           "Give me a piece of wisdom to ponder.",
           "I need some advice. What do you have for me?",
           "What life lesson do you have for me today?",
-          "Give me some gyaan, I’m all ears!"];
+          "Give me some gyaan, I'm all ears!"];
 
         const randomGyaanMessage = gyaanMessages[Math.floor(Math.random() * gyaanMessages.length)];
         addMessageToChat("user", randomGyaanMessage);
@@ -292,9 +299,9 @@ Type any of the above commands to try them out and have some fun! 🎉`);
 
         const catMessages = ["Time for a random cat fact!",
           "I want to hear a cool cat fact!",
-          "Hit me with a fun cat fact, I’m all ears!",
-          "Let’s hear some cat knowledge!",
-          "I’m ready for a purrfect cat fact!"];
+          "Hit me with a fun cat fact, I'm all ears!",
+          "Let's hear some cat knowledge!",
+          "I'm ready for a purrfect cat fact!"];
 
         const randomCatMessage = catMessages[Math.floor(Math.random() * catMessages.length)];
 
@@ -311,7 +318,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
             addMessageToChat("bot", catFact);
           })
           .catch(error => {
-            addMessageToChat("bot", "Oops, the cat’s paws are too tired to fetch a fact right now! Try again later! 🐾");
+            addMessageToChat("bot", "Oops, the cat's paws are too tired to fetch a fact right now! Try again later! 🐾");
           });
         break;
 
@@ -322,7 +329,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           "Give me a fun Pokémon fact!",
           "Show me a random Pokémon tidbit!",
           "What cool Pokémon fact do you have for me today?",
-          "I’m all about Pokémon today, give me a random fact!"];
+          "I'm all about Pokémon today, give me a random fact!"];
 
         const randomPokeMessage = pokeMessages[Math.floor(Math.random() * pokeMessages.length)];
         addMessageToChat("user", randomPokeMessage);
@@ -346,22 +353,22 @@ Type any of the above commands to try them out and have some fun! 🎉`);
                 addMessageToChat("bot", pokeFact);
               })
               .catch(error => {
-                addMessageToChat("bot", "Pika Pika \nI’m buffering... and buffering... maybe try again later!");
+                addMessageToChat("bot", "Pika Pika \nI'm buffering... and buffering... maybe try again later!");
               });
           })
           .catch(error => {
-            addMessageToChat("bot", "Pika Pika \nI’m buffering... and buffering... maybe try again later!");
+            addMessageToChat("bot", "Pika Pika \nI'm buffering... and buffering... maybe try again later!");
           });
         break;
 
 
       case 'quiz':
 
-        const quizMessages = ["I’m ready for a tech quiz question, bring it on!",
-          "Let’s see how much I know, hit me with a tech quiz!",
+        const quizMessages = ["I'm ready for a tech quiz question, bring it on!",
+          "Let's see how much I know, hit me with a tech quiz!",
           "Time to put my tech knowledge to the test!",
-          "Give me a challenge, let’s do a tech quiz!",
-          "I’m ready to answer a tech quiz question!"];
+          "Give me a challenge, let's do a tech quiz!",
+          "I'm ready to answer a tech quiz question!"];
         const randomQuizMessage = quizMessages[Math.floor(Math.random() * quizMessages.length)];
         addMessageToChat("user", randomQuizMessage);
         fetch('https://opentdb.com/api.php?amount=1&category=18', {
@@ -399,11 +406,11 @@ Type any of the above commands to try them out and have some fun! 🎉`);
       case 'bored':
 
         const boredMessages = ["I'm feeling a bit bored, can you suggest an activity?",
-          "I’m bored, suggest something fun to do!",
+          "I'm bored, suggest something fun to do!",
           "Got any activity ideas? I need something to do!",
           "Bored out of my mind, what should I do?",
           "Give me an activity suggestion, I need some fun!",
-          "Help, I’m bored! What should I do next?"];
+          "Help, I'm bored! What should I do next?"];
 
 
         const randomBoredMessage = boredMessages[Math.floor(Math.random() * boredMessages.length)];
@@ -442,6 +449,20 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           }
         }
 
+
+      case 'clear':
+        chrome.storage.local.remove(CHAT_HISTORY_KEY, () => {
+          document.getElementById("chatResults").innerHTML = '';
+          
+          // Retrieve user data to get the username
+          chrome.storage.local.get(["username"], (data) => {
+            const greet = data.username ?
+              `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` :
+              "Welcome! Type '!help' to see available commands";
+            addMessageToChat("bot", greet);
+          });
+        });
+        break;
 
       default:
         addMessageToChat("user", command)
@@ -497,7 +518,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
     if (!data[CHAT_HISTORY_KEY] || data[CHAT_HISTORY_KEY].length === 0) {
       const greeting = data.username ?
         `Welcome back, ${data.username}! Aaj konsi site ki setting karni hai? ;)` :
-        "Welcome! Type 'all' to see saved sites.";
+        "Welcome! Type '!help' to see avaitable commands";
       addMessageToChat("bot", greeting);
     }
   });
@@ -561,6 +582,14 @@ Type any of the above commands to try them out and have some fun! 🎉`);
         if (currentFilter === "pending") return !todo.completed;
         return true;
       });
+
+      // Show or hide the empty state based on the filteredTodos length
+      const emptyState = document.querySelector('.todo-empty-state');
+      if (filteredTodos.length === 0) {
+        emptyState.style.display = 'flex'; // Show empty state
+      } else {
+        emptyState.style.display = 'none'; // Hide empty state
+      }
 
       // Sort by priority (high → medium → low) and then by creation date
       filteredTodos.sort((a, b) => {
@@ -680,48 +709,67 @@ Type any of the above commands to try them out and have some fun! 🎉`);
   function loadSnippets() {
     chrome.storage.local.get("snippets", (data) => {
       const snippets = data.snippets || [];
-      snippetsList.innerHTML = ""; // Clear existing snippets
+      const searchQuery = snippetSearchInput.value.toLowerCase();
+      
+      // Filter snippets based on the search query
+      const filteredSnippets = snippets.filter(snippet => 
+        snippet.text.toLowerCase().includes(searchQuery)
+      );
 
-      snippets.forEach(snippet => {
+      snippetsList.innerHTML = filteredSnippets.length === 0 ? getEmptyState() : "";
+
+      filteredSnippets.forEach(snippet => {
         const snippetItem = document.createElement("div");
         snippetItem.className = "snippet-item";
         snippetItem.innerHTML = `
-          <span class="snippet-text">${snippet.text}</span>
-          <button class="icon-button copy-snippet" data-id="${snippet.id}" title="Copy">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 2H6a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V6l-4-4z" />
-            </svg>
-          </button>
-          <button class="icon-button edit-snippet" data-id="${snippet.id}" title="Edit">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20h9v-9l-9 9zM3 21l3-3-2-2-3 3zM21 3l-3-3-2 2 3 3z" />
-            </svg>
-          </button>
-          <button class="icon-button delete-snippet" data-id="${snippet.id}" title="Delete">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div class="snippet-content">
+            <div class="snippet-text">${escapeHtml(snippet.text)}</div>
+            <div class="snippet-actions">
+              <button class="snippet-button copy-snippet" data-id="${snippet.id}" title="Copy to clipboard">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z" />
+                  <path d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2" />
+                </svg>
+                <span>Copy</span>
+              </button>
+              <button class="snippet-button edit-snippet" data-id="${snippet.id}" title="Edit snippet">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                <span>Edit</span>
+              </button>
+              <button class="snippet-button delete-snippet" data-id="${snippet.id}" title="Delete snippet">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
         `;
 
         // Handle copy button
-        snippetItem.querySelector(".copy-snippet").addEventListener("click", () => {
-          navigator.clipboard.writeText(snippet.text).then(() => {
-            addMessageToChat("bot", "Snippet copied to clipboard!");
-          });
+        snippetItem.querySelector(".copy-snippet").addEventListener("click", async (e) => {
+          const button = e.currentTarget;
+          try {
+            await navigator.clipboard.writeText(snippet.text);
+            button.classList.add("snippet-success");
+            showToast("Copied to clipboard!");
+            setTimeout(() => button.classList.remove("snippet-success"), 300);
+          } catch (err) {
+            showToast("Failed to copy text", "error");
+          }
         });
 
         // Handle edit button
         snippetItem.querySelector(".edit-snippet").addEventListener("click", () => {
-          const newText = prompt("Edit your snippet text:", snippet.text);
-          if (newText) {
-            updateSnippet(snippet.id, newText);
-          }
+          showEditModal(snippet);
         });
 
         // Handle delete button
         snippetItem.querySelector(".delete-snippet").addEventListener("click", () => {
-          deleteSnippet(snippet.id);
+          showDeleteConfirmation(snippet.id);
         });
 
         snippetsList.appendChild(snippetItem);
@@ -729,11 +777,126 @@ Type any of the above commands to try them out and have some fun! 🎉`);
     });
   }
 
+  // Helper function to escape HTML
+  function escapeHtml(unsafe) {
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  // Show edit modal
+  function showEditModal(snippet) {
+    const modal = document.createElement("div");
+    modal.className = "delete-modal";
+    modal.innerHTML = `
+      <div class="delete-modal-header">
+        <h3 class="delete-modal-title">Edit Snippet</h3>
+      </div>
+      <textarea class="snippet-edit-textarea" style="width: 100%; min-height: 100px; margin-bottom: 16px;">${snippet.text}</textarea>
+      <div class="delete-modal-actions">
+        <button class="delete-modal-button delete-cancel">Cancel</button>
+        <button class="delete-modal-button delete-confirm" style="background: var(--button-bg);">Save</button>
+      </div>
+    `;
+
+    const overlay = document.createElement("div");
+    overlay.className = "delete-modal-overlay";
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.remove();
+      overlay.remove();
+    };
+
+    overlay.addEventListener("click", closeModal);
+    modal.querySelector(".delete-cancel").addEventListener("click", closeModal);
+    modal.querySelector(".delete-confirm").addEventListener("click", () => {
+      const newText = modal.querySelector(".snippet-edit-textarea").value.trim();
+      if (newText) {
+        updateSnippet(snippet.id, newText);
+        closeModal();
+        showToast("Snippet updated successfully!");
+      }
+    });
+  }
+
+  // Show delete confirmation
+  function showDeleteConfirmation(snippetId) {
+    const modal = document.createElement("div");
+    modal.className = "delete-modal";
+    modal.innerHTML = `
+      <div class="delete-modal-header">
+        <h3 class="delete-modal-title">Delete Snippet</h3>
+      </div>
+      <div class="delete-modal-content">
+        Are you sure you want to delete this snippet? This action cannot be undone.
+      </div>
+      <div class="delete-modal-actions">
+        <button class="delete-modal-button delete-cancel">Cancel</button>
+        <button class="delete-modal-button delete-confirm">Delete</button>
+      </div>
+    `;
+
+    const overlay = document.createElement("div");
+    overlay.className = "delete-modal-overlay";
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+      modal.remove();
+      overlay.remove();
+    };
+
+    overlay.addEventListener("click", closeModal);
+    modal.querySelector(".delete-cancel").addEventListener("click", closeModal);
+    modal.querySelector(".delete-confirm").addEventListener("click", () => {
+      deleteSnippet(snippetId);
+      closeModal();
+      showToast("Snippet deleted successfully!");
+    });
+  }
+
+  // Show toast notification
+  function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+    toast.className = `alert-message ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add("fade-out");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Get empty state HTML
+  function getEmptyState() {
+    return `
+      <div class="snippet-empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M19 11H5M19 11C20.1046 11 21 11.8954 21 13V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V13C3 11.8954 3.89543 11 5 11M19 11V9C19 7.89543 18.1046 7 17 7M5 11V9C5 7.89543 5.89543 7 7 7M7 7V5C7 3.89543 7.89543 3 9 3H15C16.1046 3 17 3.89543 17 5V7M7 7H17" />
+          </svg>
+        </div>
+        <div class="empty-state-content">
+          <h3 class="empty-state-title">No snippets yet</h3>
+          <p class="empty-state-description">Create your first snippet to quickly access frequently used text</p>
+        </div>
+      </div>
+    `;
+  }
+
   // Function to update a snippet
   function updateSnippet(id, newText) {
     chrome.storage.local.get("snippets", (data) => {
       const snippets = data.snippets || [];
-      const updatedSnippets = snippets.map(snippet => 
+      const updatedSnippets = snippets.map(snippet =>
         snippet.id === id ? { ...snippet, text: newText } : snippet
       );
       chrome.storage.local.set({ snippets: updatedSnippets }, loadSnippets);
@@ -759,6 +922,9 @@ Type any of the above commands to try them out and have some fun! 🎉`);
   //   });
   // });
 
+  snippetSearchInput.addEventListener("input", () => {
+    loadSnippets(); // Reload snippets to apply the search filter
+  });
 });
 
 function exportSettings() {
@@ -841,56 +1007,114 @@ function formatDate(dateString) {
 
 function addMessageToChat(sender, content) {
   const chatResults = document.getElementById("chatResults");
-  const messageElement = document.createElement("div");
+  
+  if (sender === "bot") {
+    // Create typing indicator first
+    const typingElement = document.createElement("div");
+    typingElement.classList.add("chat-message", "bot-message", "typing-indicator");
+    typingElement.innerHTML = `
+      <div class="ticontainer">
+        <div class="tiblock">
+          <div class="tidot"></div>
+          <div class="tidot"></div>
+          <div class="tidot"></div>
+        </div>
+      </div>
+    `;
+    chatResults.appendChild(typingElement);
+    typingElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
+    // Add actual message after delay
+    setTimeout(() => {
+      // Remove typing indicator
+      typingElement.remove();
 
-  messageElement.classList.add("chat-message", `${sender}-message`);
+      // Add the actual message
+      const messageElement = document.createElement("div");
+      messageElement.classList.add("chat-message", `${sender}-message`);
 
-  // Create message content
-  let messageContent;
-  if (typeof content === 'object') {
-    const entryDiv = document.createElement("div");
-    entryDiv.classList.add("site-entry");
+      // Create message content
+      if (typeof content === 'object') {
+        const entryDiv = document.createElement("div");
+        entryDiv.classList.add("site-entry");
 
-    const urlDiv = document.createElement("div");
-    urlDiv.classList.add("site-url");
-    urlDiv.textContent = content.site_url;
+        const urlDiv = document.createElement("div");
+        urlDiv.classList.add("site-url");
+        urlDiv.textContent = content.site_url;
 
-    const detailsDiv = document.createElement("div");
-    detailsDiv.classList.add("site-details");
-    detailsDiv.textContent = `${content.settings}\n${content.notes}`;
+        const detailsDiv = document.createElement("div");
+        detailsDiv.classList.add("site-details");
+        detailsDiv.textContent = `${content.settings}\n${content.notes}`;
 
-    entryDiv.appendChild(urlDiv);
-    entryDiv.appendChild(detailsDiv);
-    messageElement.appendChild(entryDiv);
-    messageContent = content;
+        entryDiv.appendChild(urlDiv);
+        entryDiv.appendChild(detailsDiv);
+        messageElement.appendChild(entryDiv);
+      } else {
+        if (content.startsWith("✓")) {
+          messageElement.classList.add("success-message");
+        }
+        messageElement.textContent = content;
+      }
+
+      // Add timestamp
+      const now = new Date();
+      const timeDiv = document.createElement("div");
+      timeDiv.classList.add("message-time");
+      timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      messageElement.appendChild(timeDiv);
+
+      chatResults.appendChild(messageElement);
+
+      // Save to chat history
+      saveChatMessage({
+        sender,
+        content,
+        timestamp: now.toISOString()
+      });
+
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 3000); // 3 second delay before showing actual message
+
   } else {
-    if (content.startsWith("✓")) {
-      messageElement.classList.add("success-message");
+    // For user messages, add them immediately without typing animation
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("chat-message", `${sender}-message`);
+
+    if (typeof content === 'object') {
+      const entryDiv = document.createElement("div");
+      entryDiv.classList.add("site-entry");
+
+      const urlDiv = document.createElement("div");
+      urlDiv.classList.add("site-url");
+      urlDiv.textContent = content.site_url;
+
+      const detailsDiv = document.createElement("div");
+      detailsDiv.classList.add("site-details");
+      detailsDiv.textContent = `${content.settings}\n${content.notes}`;
+
+      entryDiv.appendChild(urlDiv);
+      entryDiv.appendChild(detailsDiv);
+      messageElement.appendChild(entryDiv);
+    } else {
+      messageElement.textContent = content;
     }
-    messageElement.textContent = content;
-    messageContent = content;
-  }
 
-  // Add timestamp
-  const now = new Date();
-  const timeDiv = document.createElement("div");
-  timeDiv.classList.add("message-time");
-  timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  messageElement.appendChild(timeDiv);
+    const now = new Date();
+    const timeDiv = document.createElement("div");
+    timeDiv.classList.add("message-time");
+    timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    messageElement.appendChild(timeDiv);
 
-  chatResults.appendChild(messageElement);
+    chatResults.appendChild(messageElement);
 
-  // Save to chat history
-  saveChatMessage({
-    sender,
-    content: messageContent,
-    timestamp: now.toISOString()
-  });
+    saveChatMessage({
+      sender,
+      content,
+      timestamp: now.toISOString()
+    });
 
-  setTimeout(() => {
     messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, 100);
+  }
 }
 
 function saveChatMessage(message) {

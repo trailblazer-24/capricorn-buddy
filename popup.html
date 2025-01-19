@@ -17,7 +17,7 @@
     <nav class="sidebar">
       <div class="logo">
         <div class="logo-content">
-          <h1>Capricorn<span class="accent">Buddy</span> <span class="emoji">🤖</span></h1>
+          <h1>Capricorn<span class="accent">Buddy</span> <span class="emoji">🐱</span></h1>
           <div class="status">
             <span class="status-dot"></span>
             <span class="status-text">Always Online</span>
@@ -64,15 +64,7 @@
     <main class="main-content">
       <div id="searchTab" class="tab-content active">
         <div id="chatContainer">
-          <div id="chatResults">
-            <div id="typingIndicator" class="ticontainer" style="display: none;">
-              <div class="tiblock">
-                <div class="tidot"></div>
-                <div class="tidot"></div>
-                <div class="tidot"></div>
-              </div>
-            </div>
-          </div>
+          <div id="chatResults"></div>
         </div>
         <div id="chatInputContainer" class="fixed-bottom">
           <div class="search-wrapper">
@@ -154,15 +146,46 @@
             </div>
           </div>
 
+          <div class="todo-empty-state">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 2C10.3431 2 9 3.34315 9 5V6H6C4.34315 6 3 7.34315 3 9V20C3 21.6569 4.34315 23 6 23H18C19.6569 23 21 21.6569 21 20V9C21 7.34315 19.6569 6 18 6H15V5C15 3.34315 13.6569 2 12 2Z" />
+              </svg>
+            </div>
+            <div class="empty-state-content">
+              <h3 class="empty-state-title">No Tasks Yet!</h3>
+              <p class="empty-state-description">Looks like you have nothing to do. Time to relax! 🐱</p>
+            </div>
+          </div>
+
           <div id="todoList" class="todo-list"></div>
         </div>
       </div>
 
       <div id="snippetsTab" class="tab-content">
         <div class="snippets-container">
-          <h2 class="snippets-title">My Snippets</h2>
-          <button id="addSnippetButton" class="add-snippet-button">Add Snippet</button>
-          <div id="snippetsList" class="snippets-list"></div>
+          <div class="snippets-header">
+            <h2 class="snippets-title">Your Snippets</h2>
+            <p class="snippets-subtitle">Save and organize your frequently used text snippets</p>
+            <input type="text" id="snippetSearchInput" placeholder="Search snippets..." />
+          </div>
+          
+          <div id="snippetsList" class="snippets-list">
+            <!-- Empty state will be shown when no snippets -->
+            <div class="snippet-empty-state">
+              <div class="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="empty-state-content">
+                <h3 class="empty-state-title">No snippets yet</h3>
+                <p class="empty-state-description">Add your first snippet to get started</p>
+              </div>
+            </div>
+          </div>
+          
+          <button id="addSnippetButton" title="Add new snippet"></button>
         </div>
       </div>
 
