@@ -979,12 +979,12 @@ body {
 }
 
 .todo-text {
-  font-weight: 500;
+  font-size: 15px;
   transition: all 0.2s ease;
 }
 
 .todo-priority {
-  font-size: 12px;
+  font-size: 13px;
   padding: 2px 8px;
   border-radius: 4px;
   text-transform: capitalize;

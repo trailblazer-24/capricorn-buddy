@@ -1104,7 +1104,7 @@ function addMessageToChat(sender, content) {
       });
 
       messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 3000); // 3 second delay before showing actual message
+    }, 2500); // second delay before showing actual message
 
   } else {
     // For user messages, add them immediately without typing animation
