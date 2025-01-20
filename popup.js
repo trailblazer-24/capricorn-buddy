@@ -208,6 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
 • !poke - Learn a random Pokémon fact!
 • !quiz - Test your knowledge with a tech quiz question
 • !bored - Find an activity suggestion to combat boredom
+• !meal - Get a random english meal suggestion
 • !clear - Clear your chat history
 
 Type any of the above commands to try them out and have some fun! 🎉`);
@@ -232,11 +233,11 @@ Type any of the above commands to try them out and have some fun! 🎉`);
 
           if (combinedData.length) {
             // Prepare all entries in a single message
-            const allEntries = combinedData.map(entry => 
+            const allEntries = combinedData.map(entry =>
               `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`
             ).join('\n\n');
-            
-           
+
+
             addMessageToChat("bot", `Ye lo ji:\n\n${allEntries}`);
           } else {
             addMessageToChat("bot", "No sites found in the database.");
@@ -450,10 +451,40 @@ Type any of the above commands to try them out and have some fun! 🎉`);
         }
 
 
+
+
+      case 'meal':
+
+      const mealMessages = ["I'm hungry, what should I eat?", "What's for dinner?", "I need a meal idea, any suggestions?", "I'm hungry, what's for dinner?", "I'm looking for a meal idea, any recommendations?", "What's the best meal to eat tonight?"];
+
+      const randomMealMessage = mealMessages[Math.floor(Math.random() * mealMessages.length)];
+      addMessageToChat("user", randomMealMessage);  
+        fetch('https://www.themealdb.com/api/json/v1/1/random.php', {
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            const meal = data.meals[0]; // The random meal returned
+            const mealName = meal.strMeal;
+            const mealCategory = meal.strCategory;
+            const mealArea = meal.strArea;
+            const mealInstructions = meal.strInstructions;
+            const mealFact = `Hungry? \nDid you know? ${mealName} is a delicious ${mealCategory} dish from ${mealArea}.\nHere's how to make it: ${mealInstructions}...`;
+
+            addMessageToChat("bot", mealFact);
+          })
+          .catch(error => {
+            addMessageToChat("bot", "Oops! Something went wrong while fetching a meal. Please try again later!");
+          });
+        break;
+
+
       case 'clear':
         chrome.storage.local.remove(CHAT_HISTORY_KEY, () => {
           document.getElementById("chatResults").innerHTML = '';
-          
+
           // Retrieve user data to get the username
           chrome.storage.local.get(["username"], (data) => {
             const greet = data.username ?
@@ -710,9 +741,9 @@ Type any of the above commands to try them out and have some fun! 🎉`);
     chrome.storage.local.get("snippets", (data) => {
       const snippets = data.snippets || [];
       const searchQuery = snippetSearchInput.value.toLowerCase();
-      
+
       // Filter snippets based on the search query
-      const filteredSnippets = snippets.filter(snippet => 
+      const filteredSnippets = snippets.filter(snippet =>
         snippet.text.toLowerCase().includes(searchQuery)
       );
 
@@ -1007,7 +1038,7 @@ function formatDate(dateString) {
 
 function addMessageToChat(sender, content) {
   const chatResults = document.getElementById("chatResults");
-  
+
   if (sender === "bot") {
     // Create typing indicator first
     const typingElement = document.createElement("div");
