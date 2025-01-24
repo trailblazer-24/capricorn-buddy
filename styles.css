@@ -1930,3 +1930,235 @@ button:disabled {
     background-position: 0% 50%;
   }
 }
+
+
+/* Styles for Site Info Tab */
+.site-info-container {
+  padding: 16px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.site-info-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-color);
+}
+
+.site-certificate-info {
+  font-size: 14px;
+  color: var(--secondary-text);
+  line-height: 1.5;
+  padding-bottom: 12px;
+  overflow-y: auto;
+}
+
+/* Certificate Info Styles */
+.certificate-info {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+  overflow-y: auto;
+}
+
+.cert-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cert-header .icon {
+  width: 24px;
+  height: 24px;
+  color: var(--success);
+}
+
+.cert-status {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.cert-status.valid {
+  color: var(--success);
+}
+
+.cert-status.expired {
+  color: #ef4444;
+}
+
+.cert-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.cert-item:last-child {
+  border-bottom: none;
+}
+
+.cert-item .label {
+  color: var(--secondary-text);
+  font-size: 14px;
+}
+
+.cert-item .value {
+  font-weight: 500;
+}
+
+.cert-item .status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.cert-item .status.valid {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.cert-item .status.warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.cert-item .status.expired {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.loading-certificate {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  color: var(--secondary-text);
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--card-border);
+  border-top-color: var(--button-bg);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.certificate-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: #fee2e2;
+  border-radius: 8px;
+  color: #991b1b;
+}
+
+.certificate-error .icon {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced Certificate Info Styles */
+.cert-section {
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.cert-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--text-color);
+}
+
+.cert-item .mono {
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--card-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* SSL Grade Colors */
+.grade-a {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.grade-b {
+  color: #eab308;
+  font-weight: 600;
+}
+
+.grade-c {
+  color: #f97316;
+  font-weight: 600;
+}
+
+.grade-d, .grade-e, .grade-f {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.grade-t {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+/* Certificate Details Grid */
+.cert-details {
+  display: grid;
+  gap: 16px;
+}
+
+/* Alternative Names List */
+.cert-item .value.alt-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.alt-name-tag {
+  background: var(--input-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Enhanced Loading State */
+.loading-certificate {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 12px;
+}

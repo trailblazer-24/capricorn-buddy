@@ -5,7 +5,13 @@
     "permissions": [
       "storage",
       "downloads",
-      "notifications"
+      "notifications",
+      "contextMenus",
+      "notifications",
+      "webRequest",
+      "activeTab",
+      "tabs",
+      "<all_urls>"
     ],
     "background": {
       "service_worker": "background.js"

@@ -1,4 +1,4 @@
-const MAX_CHAT_HISTORY = 20; // Maximum number of messages to keep
+const MAX_CHAT_HISTORY = 30; // Maximum number of messages to keep
 const CHAT_HISTORY_KEY = 'chatHistory';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -83,6 +83,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Search Functionality
 
+  let commandHistory = [];
+  let historyIndex = -1;
+
+  // Load command history from storage
+  chrome.storage.local.get("commandHistory", (data) => {
+    commandHistory = data.commandHistory || [];
+  });
+
+  // Save command to history
+  function saveCommandToHistory(command) {
+    commandHistory.push(command);
+    if (commandHistory.length > MAX_CHAT_HISTORY) {
+      commandHistory.shift(); // Keep history within limit
+    }
+    chrome.storage.local.set({ commandHistory });
+  }
+
+  // Handle keypress for command history navigation
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+      if (historyIndex > 0) {
+        historyIndex--;
+        searchInput.value = commandHistory[historyIndex];
+      }
+    } else if (event.key === "ArrowDown") {
+      if (historyIndex < commandHistory.length - 1) {
+        historyIndex++;
+        searchInput.value = commandHistory[historyIndex];
+      } else {
+        historyIndex = commandHistory.length;
+        searchInput.value = '';
+      }
+    }
+  });
+
   async function performSearch(searchValue) {
     searchValue = searchValue || searchInput.value.trim();
 
@@ -90,6 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
       addMessageToChat("bot", "Please enter a search query or command.");
       return;
     }
+
+    // Save command to history
+    saveCommandToHistory(searchValue);
+    historyIndex = commandHistory.length; // Reset index
 
     // Add the user message to the chat
     if (searchValue.startsWith('!')) {
@@ -956,6 +995,158 @@ Type any of the above commands to try them out and have some fun! 🎉`);
   snippetSearchInput.addEventListener("input", () => {
     loadSnippets(); // Reload snippets to apply the search filter
   });
+
+  // Function to fetch and display site certificate information
+  async function fetchSiteCertificateInfo() {
+    const siteCertificateInfo = document.getElementById("siteCertificateInfo");
+    siteCertificateInfo.innerHTML = `
+      <div class="loading-certificate">
+        <div class="loading-spinner"></div>
+        <p>Fetching certificate information...</p>
+      </div>
+    `;
+
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+      if (!tab?.url || !tab.url.startsWith('https')) {
+        siteCertificateInfo.innerHTML = `
+          <div class="certificate-error">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <p>${!tab?.url ? 'No active tab found.' : 'This site is not using HTTPS.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      const domain = new URL(tab.url).hostname;
+      const [crtResponse, sslLabsResponse] = await Promise.all([
+        fetch(`https://crt.sh/?q=${domain}&output=json`),
+        fetch(`https://api.ssllabs.com/api/v3/analyze?host=${domain}&all=done`)
+      ]);
+
+      const [certData, sslData] = await Promise.all([
+        crtResponse.json(),
+        sslLabsResponse.json()
+      ]);
+
+      if (certData && certData.length > 0) {
+        const latestCert = certData[0];
+        const validFrom = new Date(latestCert.not_before);
+        const validTo = new Date(latestCert.not_after);
+        const isExpired = validTo < new Date();
+        const daysToExpiry = Math.ceil((validTo - new Date()) / (1000 * 60 * 60 * 24));
+
+        // Parse the issuer name into components
+        const issuerParts = latestCert.issuer_name.split(',').reduce((acc, part) => {
+          const [key, value] = part.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {});
+
+        siteCertificateInfo.innerHTML = `
+          <div class="certificate-info ${isExpired ? 'expired' : ''}">
+            <div class="cert-header">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <span class="cert-status ${isExpired ? 'expired' : 'valid'}">
+                ${isExpired ? 'Certificate Expired' : 'Certificate Valid'}
+              </span>
+            </div>
+            
+            <div class="cert-details">
+              <div class="cert-section">
+                <h3>Domain Information</h3>
+                <div class="cert-item">
+                  <span class="label">Domain Name:</span>
+                  <span class="value">${domain}</span>
+                </div>
+                <div class="cert-item">
+                  <span class="label">Common Name (CN):</span>
+                  <span class="value">${latestCert.common_name}</span>
+                </div>
+                ${latestCert.name_value ? `
+                  <div class="cert-item">
+                    <span class="label">Alternative Names:</span>
+                    <span class="value">${latestCert.name_value.split('\n').join(', ')}</span>
+                  </div>
+                ` : ''}
+              </div>
+
+              <div class="cert-section">
+                <h3>Certificate Details</h3>
+                <div class="cert-item">
+                  <span class="label">Serial Number:</span>
+                  <span class="value mono">${latestCert.serial_number}</span>
+                </div>
+                <div class="cert-item">
+                  <span class="label">Issuer Organization:</span>
+                  <span class="value">${issuerParts.O || 'N/A'}</span>
+                </div>
+                <div class="cert-item">
+                  <span class="label">Issuer Country:</span>
+                  <span class="value">${issuerParts.C || 'N/A'}</span>
+                </div>
+              </div>
+
+              <div class="cert-section">
+                <h3>Validity Period</h3>
+                <div class="cert-item">
+                  <span class="label">Valid From:</span>
+                  <span class="value">${validFrom.toLocaleString()}</span>
+                </div>
+                <div class="cert-item">
+                  <span class="label">Valid Until:</span>
+                  <span class="value">${validTo.toLocaleString()}</span>
+                </div>
+                <div class="cert-item">
+                  <span class="label">Status:</span>
+                  <span class="value status ${isExpired ? 'expired' : daysToExpiry < 30 ? 'warning' : 'valid'}">
+                    ${isExpired ? 'Expired' : daysToExpiry < 30 ? `Expires in ${daysToExpiry} days` : 'Valid'}
+                  </span>
+                </div>
+              </div>
+
+              ${sslData?.endpoints?.[0] ? `
+                <div class="cert-section">
+                  <h3>SSL/TLS Security</h3>
+                  <div class="cert-item">
+                    <span class="label">SSL Rating:</span>
+                    <span class="value grade-${sslData.endpoints[0].grade?.toLowerCase()}">${sslData.endpoints[0].grade || 'N/A'}</span>
+                  </div>
+                  <div class="cert-item">
+                    <span class="label">Protocol Support:</span>
+                    <span class="value">${Object.keys(sslData.endpoints[0].details?.protocols || {}).map(p => p.toUpperCase()).join(', ') || 'N/A'}</span>
+                  </div>
+                  <div class="cert-item">
+                    <span class="label">Forward Secrecy:</span>
+                    <span class="value">${sslData.endpoints[0].details?.forwardSecrecy ? 'Yes' : 'No'}</span>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      } else {
+        throw new Error('No certificate data found');
+      }
+    } catch (error) {
+      siteCertificateInfo.innerHTML = `
+        <div class="certificate-error">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <p>Unable to fetch certificate information. ${error.message}</p>
+        </div>
+      `;
+    }
+  }
+
+  // Add event listener for the Site Info tab
+  document.querySelector('[data-tab="siteInfo"]').addEventListener('click', fetchSiteCertificateInfo);
 });
 
 function exportSettings() {
