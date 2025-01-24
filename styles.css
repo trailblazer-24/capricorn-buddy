@@ -2162,3 +2162,138 @@ button:disabled {
   height: 32px;
   margin: 0 auto 12px;
 }
+
+/* Games Tab Styles */
+.games-container {
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.games-header {
+  margin-bottom: 24px;
+}
+
+.games-title {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--button-bg), #6366f1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.games-subtitle {
+  font-size: 14px;
+  color: var(--secondary-text);
+  margin: 8px 0 0 0;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.game-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(var(--button-bg-rgb), 0.15);
+}
+
+.game-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.game-card h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-color);
+}
+
+.game-card p {
+  font-size: 14px;
+  color: var(--secondary-text);
+  margin: 0 0 16px 0;
+}
+
+.play-button {
+  background: linear-gradient(135deg, var(--button-bg), #6366f1);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.play-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--button-bg-rgb), 0.2);
+}
+
+.game-canvas-container {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid var(--card-border);
+  color: var(--text-color);
+  padding: 8px 16px;
+}
+
+.back-button:hover {
+  background: var(--hover-bg);
+}
+
+.back-button .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.game-score {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.game-controls {
+  margin-top: 16px;
+  text-align: center;
+  color: var(--secondary-text);
+  font-size: 14px;
+}
+
+#canvas {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  background: var(--input-bg);
+  border-radius: 8px;
+  margin: 0 auto;
+  display: block;
+}

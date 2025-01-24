@@ -58,6 +58,12 @@
           </svg>
           <span>Site Info</span>
         </button>
+        <button class="tab-button" data-tab="games">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 8v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 4h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm7-5h.01M15 11h.01"/>
+          </svg>
+          <span>Games</span>
+        </button>
       </div>
       <div class="sidebar-footer">
         <p>Made with <span class="heart">❤️</span> by<br />Biswajit</p>
@@ -202,6 +208,54 @@
           <h2 class="site-info-title">Site Information</h2>
           <div id="siteCertificateInfo" class="site-certificate-info">
             <!-- Certificate details will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <div id="gamesTab" class="tab-content">
+        <div class="games-container">
+          <div class="games-header">
+            <h2 class="games-title">Mini Games</h2>
+            <p class="games-subtitle">Take a break and have some fun!</p>
+          </div>
+          
+          <div class="games-grid">
+            <div class="game-card" data-game="snake">
+              <div class="game-icon">🐍</div>
+              <h3>Snake</h3>
+              <p>Classic snake game. Eat food, grow longer!</p>
+              <button class="play-button">Play Now</button>
+            </div>
+            
+            <div class="game-card" data-game="2048">
+              <div class="game-icon">🎲</div>
+              <h3>2048</h3>
+              <p>Merge tiles to reach 2048!</p>
+              <button class="play-button">Play Now</button>
+            </div>
+            
+            <div class="game-card" data-game="tictactoe">
+              <div class="game-icon">⭕</div>
+              <h3>Tic Tac Toe</h3>
+              <p>Classic X's and O's game!</p>
+              <button class="play-button">Play Now</button>
+            </div>
+          </div>
+
+          <div id="gameCanvas" class="game-canvas-container" style="display: none;">
+            <div class="game-header">
+              <button class="back-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Games
+              </button>
+              <div class="game-score">Score: <span id="gameScore">0</span></div>
+            </div>
+            <canvas id="canvas"></canvas>
+            <div class="game-controls">
+              <p>Controls: Use arrow keys or WASD to play</p>
+            </div>
           </div>
         </div>
       </div>
