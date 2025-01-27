@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const combinedData = [...siteData, ...database, ...databaseJson];
 
       const filtered = combinedData.filter((entry) =>
-        entry.site_url.toLowerCase().includes(searchValue)
+        entry.site_url.toLowerCase().includes(searchValue.toLowerCase())
       );
 
       if (filtered.length) {
@@ -1637,7 +1637,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           ctx.fillText('Press Space to Start', canvas.width/2, canvas.height/2 + 20);
           
           ctx.font = '18px Inter';
-          ctx.fillText('Use Arrow Keys to play', canvas.width/2, canvas.height/2 + 60);
+          ctx.fillText('Press Space to Start', canvas.width/2, canvas.height/2 + 60);
         }
 
         const keydownHandler = (e) => {
@@ -1674,7 +1674,377 @@ Type any of the above commands to try them out and have some fun! 🎉`);
     // Add Tic Tac Toe implementation
     'tictactoe': {
       init(canvas) {
-        // Implementation will be added in next message
+        const ctx = canvas.getContext('2d');
+        const CELL_SIZE = canvas.width / 3;
+        let board = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let gameLoop = null;
+        let isGameStarted = false;
+        let gameOver = false;
+
+        function drawBoard() {
+          ctx.fillStyle = '#fafafa';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Draw grid lines
+          ctx.strokeStyle = '#333';
+          ctx.lineWidth = 2;
+          
+          // Vertical lines
+          ctx.beginPath();
+          ctx.moveTo(CELL_SIZE, 0);
+          ctx.lineTo(CELL_SIZE, canvas.height);
+          ctx.moveTo(CELL_SIZE * 2, 0);
+          ctx.lineTo(CELL_SIZE * 2, canvas.height);
+          ctx.stroke();
+
+          // Horizontal lines
+          ctx.beginPath();
+          ctx.moveTo(0, CELL_SIZE);
+          ctx.lineTo(canvas.width, CELL_SIZE);
+          ctx.moveTo(0, CELL_SIZE * 2);
+          ctx.lineTo(canvas.width, CELL_SIZE * 2);
+          ctx.stroke();
+
+          // Draw X's and O's
+          board.forEach((cell, index) => {
+            if (cell) {
+              const x = (index % 3) * CELL_SIZE;
+              const y = Math.floor(index / 3) * CELL_SIZE;
+              drawSymbol(cell, x, y);
+            }
+          });
+        }
+
+        function drawSymbol(symbol, x, y) {
+          ctx.strokeStyle = symbol === 'X' ? '#FF5722' : '#2196F3';
+          ctx.lineWidth = 8;
+          const padding = 40;
+
+          if (symbol === 'X') {
+            ctx.beginPath();
+            ctx.moveTo(x + padding, y + padding);
+            ctx.lineTo(x + CELL_SIZE - padding, y + CELL_SIZE - padding);
+            ctx.moveTo(x + CELL_SIZE - padding, y + padding);
+            ctx.lineTo(x + padding, y + CELL_SIZE - padding);
+            ctx.stroke();
+          } else {
+            ctx.beginPath();
+            ctx.arc(
+              x + CELL_SIZE/2,
+              y + CELL_SIZE/2,
+              CELL_SIZE/2 - padding,
+              0,
+              Math.PI * 2
+            );
+            ctx.stroke();
+          }
+        }
+
+        function checkWinner() {
+          const lines = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6] // Diagonals
+          ];
+
+          for (let line of lines) {
+            const [a, b, c] = line;
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+              return board[a];
+            }
+          }
+
+          if (board.every(cell => cell !== null)) {
+            return 'tie';
+          }
+
+          return null;
+        }
+
+        function handleClick(e) {
+          if (!isGameStarted || gameOver) return;
+
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const col = Math.floor(x / CELL_SIZE);
+          const row = Math.floor(y / CELL_SIZE);
+          const index = row * 3 + col;
+
+          if (board[index] === null) {
+            board[index] = currentPlayer;
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            
+            const winner = checkWinner();
+            if (winner) {
+              gameOver = true;
+              setTimeout(() => showGameOver(winner), 100);
+            }
+          }
+        }
+
+        function showGameOver(winner) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = 'white';
+          ctx.font = 'bold 48px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText(
+            winner === 'tie' ? 'Tie Game!' : `${winner} Wins!`,
+            canvas.width/2,
+            canvas.height/2 - 20
+          );
+
+          ctx.font = '24px Inter';
+          ctx.fillText('Press Space to play again', canvas.width/2, canvas.height/2 + 40);
+          
+          isGameStarted = false;
+        }
+
+        function showStartScreen() {
+          ctx.fillStyle = '#fafafa';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          ctx.fillStyle = '#333';
+          ctx.font = 'bold 48px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText('Tic Tac Toe', canvas.width/2, canvas.height/2 - 40);
+          
+          ctx.font = '24px Inter';
+          ctx.fillText('Press Space to Start', canvas.width/2, canvas.height/2 + 20);
+          
+          ctx.font = '18px Inter';
+          ctx.fillText('Click to place X or O', canvas.width/2, canvas.height/2 + 60);
+        }
+
+        function startGame() {
+          board = Array(9).fill(null);
+          currentPlayer = 'X';
+          gameOver = false;
+          isGameStarted = true;
+          document.getElementById('gameScore').textContent = '0';
+          
+          gameLoop = requestAnimationFrame(function animate() {
+            drawBoard();
+            gameLoop = requestAnimationFrame(animate);
+          });
+        }
+
+        canvas.addEventListener('click', handleClick);
+
+        const keydownHandler = (e) => {
+          if (e.key === ' ') {
+            if (!isGameStarted || gameOver) {
+              startGame();
+            }
+          }
+        };
+
+        document.addEventListener('keydown', keydownHandler);
+        showStartScreen();
+
+        return {
+          cleanup: () => {
+            if (gameLoop) cancelAnimationFrame(gameLoop);
+            document.removeEventListener('keydown', keydownHandler);
+            canvas.removeEventListener('click', handleClick);
+          }
+        };
+      }
+    },
+    // Add Memory Card implementation
+    'memory': {
+      init(canvas) {
+        const ctx = canvas.getContext('2d');
+        const GRID_SIZE = 4;
+        const CARD_SIZE = canvas.width / GRID_SIZE;
+        const PADDING = 10;
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let score = 0;
+        let gameLoop = null;
+        let isGameStarted = false;
+
+        const EMOJIS = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+
+        function initCards() {
+          cards = [];
+          flippedCards = [];
+          matchedPairs = 0;
+          score = 0;
+          document.getElementById('gameScore').textContent = '0';
+
+          // Create pairs of cards
+          const cardPairs = [...EMOJIS, ...EMOJIS];
+          // Shuffle cards
+          for (let i = cardPairs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cardPairs[i], cardPairs[j]] = [cardPairs[j], cardPairs[i]];
+          }
+
+          // Create card objects
+          for (let i = 0; i < GRID_SIZE; i++) {
+            for (let j = 0; j < GRID_SIZE; j++) {
+              cards.push({
+                emoji: cardPairs[i * GRID_SIZE + j],
+                x: j * CARD_SIZE,
+                y: i * CARD_SIZE,
+                isFlipped: false,
+                isMatched: false
+              });
+            }
+          }
+        }
+
+        function drawCards() {
+          ctx.fillStyle = '#fafafa';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          cards.forEach(card => {
+            const x = card.x + PADDING;
+            const y = card.y + PADDING;
+            const width = CARD_SIZE - 2 * PADDING;
+            const height = CARD_SIZE - 2 * PADDING;
+
+            ctx.fillStyle = card.isMatched ? '#e0e0e0' : '#fff';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // Draw card background
+            ctx.beginPath();
+            ctx.roundRect(x, y, width, height, 8);
+            ctx.fill();
+            ctx.stroke();
+
+            if (card.isFlipped || card.isMatched) {
+              // Draw emoji
+              ctx.font = `${CARD_SIZE/2}px Arial`;
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(
+                card.emoji,
+                x + width/2,
+                y + height/2
+              );
+            } else {
+              // Draw card back pattern
+              ctx.fillStyle = '#ddd';
+              ctx.beginPath();
+              ctx.roundRect(x + 10, y + 10, width - 20, height - 20, 4);
+              ctx.fill();
+            }
+          });
+        }
+
+        function handleClick(e) {
+          if (!isGameStarted || flippedCards.length >= 2) return;
+
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          cards.forEach((card, index) => {
+            if (!card.isFlipped && !card.isMatched &&
+                x >= card.x && x <= card.x + CARD_SIZE &&
+                y >= card.y && y <= card.y + CARD_SIZE) {
+              flipCard(index);
+            }
+          });
+        }
+
+        function flipCard(index) {
+          cards[index].isFlipped = true;
+          flippedCards.push(index);
+
+          if (flippedCards.length === 2) {
+            const [first, second] = flippedCards;
+            
+            if (cards[first].emoji === cards[second].emoji) {
+              // Match found
+              cards[first].isMatched = true;
+              cards[second].isMatched = true;
+              matchedPairs++;
+              score += 100;
+              document.getElementById('gameScore').textContent = score;
+              flippedCards = [];
+
+              if (matchedPairs === EMOJIS.length) {
+                setTimeout(showGameOver, 500);
+              }
+            } else {
+              // No match
+              setTimeout(() => {
+                cards[first].isFlipped = false;
+                cards[second].isFlipped = false;
+                flippedCards = [];
+              }, 1000);
+            }
+          }
+        }
+
+        function showGameOver() {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = 'white';
+          ctx.font = 'bold 48px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText('You Win!', canvas.width/2, canvas.height/2 - 20);
+
+          ctx.font = '24px Inter';
+          ctx.fillText(`Score: ${score}`, canvas.width/2, canvas.height/2 + 20);
+
+          ctx.font = '18px Inter';
+          ctx.fillText('Press Space to play again', canvas.width/2, canvas.height/2 + 60);
+          
+          isGameStarted = false;
+        }
+
+        function showStartScreen() {
+          ctx.fillStyle = '#fafafa';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = '#333';
+          ctx.font = 'bold 48px Inter';
+          ctx.textAlign = 'center';
+          ctx.fillText('Memory Game', canvas.width/2, canvas.height/2 - 40);
+
+          ctx.font = '24px Inter';
+          ctx.fillText('Press Space to Start', canvas.width/2, canvas.height/2 + 20);
+
+          ctx.font = '18px Inter';
+          ctx.fillText('Match pairs of cards', canvas.width/2, canvas.height/2 + 60);
+        }
+
+        canvas.addEventListener('click', handleClick);
+
+        const keydownHandler = (e) => {
+          if (e.key === ' ') {
+            if (!isGameStarted) {
+              isGameStarted = true;
+              initCards();
+              gameLoop = requestAnimationFrame(function animate() {
+                drawCards();
+                gameLoop = requestAnimationFrame(animate);
+              });
+            }
+          }
+        };
+
+        document.addEventListener('keydown', keydownHandler);
+        showStartScreen();
+
+        return {
+          cleanup: () => {
+            if (gameLoop) cancelAnimationFrame(gameLoop);
+            document.removeEventListener('keydown', keydownHandler);
+            canvas.removeEventListener('click', handleClick);
+          }
+        };
       }
     }
   };
