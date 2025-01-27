@@ -13,11 +13,57 @@
 </head>
 
 <body>
+  <div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-content">
+      <div class="welcome-header">
+        <h1>Welcome to <span class="gradient-text">CapricornBuddy</span></h1>
+        <div class="logo-emoji">🐱</div>
+        <p class="welcome-subtitle">Your friendly browser companion</p>
+      </div>
+      
+      <div class="welcome-features">
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <h3>Smart Search</h3>
+          <p>Find saved sites instantly</p>
+        </div>
+        
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+          <h3>Site Info</h3>
+          <p>Check site certificates</p>
+        </div>
+        
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          <h3>Todo List</h3>
+          <p>Manage your tasks</p>
+        </div>
+      </div>
+
+      <button id="getStartedBtn" class="get-started-btn">
+        Let's Go Buddy!
+        <!-- <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14m-7-7l7 7-7 7"/>
+        </svg> -->
+      </button>
+    </div>
+  </div>
+
   <div class="app-container">
     <nav class="sidebar">
       <div class="logo">
         <div class="logo-content">
-          <h1>Capricorn<span class="accent">Buddy</span> <span class="emoji">🐱</span></h1>
+          <h1>Capricorn<span class="accent">Buddy</span> <span class="emoji">🐈</span></h1>
           <div class="status">
             <span class="status-dot"></span>
             <span class="status-text">Always Online</span>
@@ -64,9 +110,17 @@
           </svg>
           <span>Games</span>
         </button>
+        <button class="tab-button" data-tab="base64">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z"/>
+            <path d="M9 12h6m-3-3v6"/>
+          </svg>
+          <span>Base64</span>
+        </button>
       </div>
       <div class="sidebar-footer">
         <p>Made with <span class="heart">❤️</span> by<br />Biswajit</p>
+        <p>Version 1.0.0</p>
       </div>
       <button id="hamburgerBtn" class="theme-toggle">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -267,6 +321,84 @@
         </div>
       </div>
 
+      <div id="base64Tab" class="tab-content">
+        <div class="base64-container">
+          <div class="base64-header">
+            <h2 class="base64-title">Base64 Encoder/Decoder</h2>
+            <p class="base64-subtitle">Convert text to and from Base64 format</p>
+          </div>
+          
+          <div class="base64-content">
+            <div class="input-controls">
+              <div class="input-type-toggle">
+                <button class="toggle-btn active" data-type="text">Text</button>
+                <button class="toggle-btn" data-type="file">File</button>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <div class="text-input active">
+                <label for="inputText">Input Text</label>
+                <textarea id="inputText" placeholder="Enter text to encode/decode..."></textarea>
+              </div>
+              <div class="file-input">
+                <label for="inputFile" class="file-drop-zone">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 16l4 4 4-4m-8 0v-8a2 2 0 012-2h12a2 2 0 012 2v8"/>
+                  </svg>
+                  <span>Drop file here or click to upload</span>
+                  <span class="file-info"></span>
+                </label>
+                <input type="file" id="inputFile" hidden>
+              </div>
+            </div>
+            
+            <div class="buttons-group">
+              <button id="encodeBtn" class="action-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 15l5-5 5 5"/>
+                </svg>
+                Encode
+              </button>
+              <button id="decodeBtn" class="action-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 9l5 5 5-5"/>
+                </svg>
+                Decode
+              </button>
+              <button id="copyBtn" class="action-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z"/>
+                  <path d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2"/>
+                </svg>
+                Copy
+              </button>
+              <button id="downloadBtn" class="action-button" disabled>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 16l4 4 4-4m-8 0v-8a2 2 0 012-2h12a2 2 0 012 2v8"/>
+                </svg>
+                Download
+              </button>
+              <button id="clearBtn" class="action-button">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Clear
+              </button>
+            </div>
+            
+            <div class="output-group">
+              <label for="outputText">Output</label>
+              <textarea id="outputText" readonly></textarea>
+              <div class="loading-overlay">
+                <div class="spinner"></div>
+                <span>Processing file...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -281,10 +413,15 @@
       <h2 class="gradient-text">Settings</h2>
       <div class="menu-item">
         <label for="themeSelect">Theme</label>
-        <select id="themeSelect" required>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="blue">Blue</option>
+        <select id="themeSelect" class="theme-dropdown">
+          <option value="light">🌟 Moonlit Pearl</option>
+          <option value="dark">🌑 Midnight Abyss</option>
+          <option value="forest">🌲 Fiery Forest</option>
+          <option value="sunset">🌅 Desert Sunset</option>
+          <option value="ocean">🌊 Deep Ocean</option>
+          <option value="lavender">💜 Mystic Lavender</option>
+          <option value="ember">🔥 Ember Glow</option>
+          <option value="mint">❄️ Arctic Mint</option>
         </select>
       </div>
       <button id="exportButton" class="menu-button">Export Settings</button>

@@ -1050,7 +1050,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           <div class="certificate-info ${isExpired ? 'expired' : ''}">
             <div class="cert-header">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
               </svg>
               <span class="cert-status ${isExpired ? 'expired' : 'valid'}">
                 ${isExpired ? 'Certificate Expired' : 'Certificate Valid'}
@@ -2097,6 +2097,359 @@ Type any of the above commands to try them out and have some fun! 🎉`);
 
   // Add this to your DOMContentLoaded event listener
   initializeGameControls();
+
+  // Add this after the DOMContentLoaded event listener
+  function initializeBase64() {
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const inputFile = document.getElementById('inputFile');
+    const fileDropZone = document.querySelector('.file-drop-zone');
+    const fileInfo = document.querySelector('.file-info');
+    const encodeBtn = document.getElementById('encodeBtn');
+    const decodeBtn = document.getElementById('decodeBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+    
+    let currentFile = null;
+    let currentFileName = '';
+    let currentFileType = '';
+
+    // Toggle between text and file input
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        toggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const type = btn.dataset.type;
+        document.querySelector('.text-input').classList.toggle('active', type === 'text');
+        document.querySelector('.file-input').classList.toggle('active', type === 'file');
+        
+        // Reset outputs
+        outputText.value = '';
+        downloadBtn.disabled = true;
+        currentFile = null;
+        fileInfo.textContent = '';
+      });
+    });
+
+    // File Drop Zone handlers
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileDropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileDropZone.addEventListener(eventName, () => {
+        fileDropZone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileDropZone.addEventListener(eventName, () => {
+        fileDropZone.classList.remove('dragover');
+      });
+    });
+
+    fileDropZone.addEventListener('drop', handleDrop);
+    inputFile.addEventListener('change', handleFileSelect);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      handleFile(file);
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      handleFile(file);
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      
+      currentFile = file;
+      currentFileName = file.name;
+      currentFileType = file.type || 'application/octet-stream';
+      fileInfo.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+      outputText.value = '';
+      downloadBtn.disabled = true;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async function encodeBase64() {
+      try {
+        if (document.querySelector('[data-type="file"].active')) {
+          if (!currentFile) {
+            alert('Please select a file first');
+            return;
+          }
+          
+          loadingOverlay.classList.add('active');
+          const base64 = await fileToBase64(currentFile);
+          outputText.value = base64;
+          downloadBtn.disabled = true;
+        } else {
+          const input = inputText.value;
+          outputText.value = btoa(unescape(encodeURIComponent(input)));
+          downloadBtn.disabled = true;
+        }
+      } catch (error) {
+        outputText.value = 'Error: Invalid input for encoding';
+      } finally {
+        loadingOverlay.classList.remove('active');
+      }
+    }
+
+    async function decodeBase64() {
+      try {
+        const input = inputText.value;
+        if (!input) {
+          alert('Please enter base64 string to decode');
+          return;
+        }
+
+        loadingOverlay.classList.add('active');
+        
+        // Try to decode as file first
+        try {
+          const [mimeType, fileName] = detectFileFromBase64(input);
+          if (mimeType) {
+            const blob = base64ToBlob(input, mimeType);
+            currentFile = blob;
+            currentFileName = fileName || 'decoded_file';
+            currentFileType = mimeType;
+            outputText.value = `File detected: ${currentFileName} (${mimeType})`;
+            downloadBtn.disabled = false;
+            return;
+          }
+        } catch (e) {
+          // If file detection fails, try as text
+          const decoded = decodeURIComponent(escape(atob(input)));
+          outputText.value = decoded;
+          downloadBtn.disabled = true;
+        }
+      } catch (error) {
+        outputText.value = 'Error: Invalid base64 input';
+      } finally {
+        loadingOverlay.classList.remove('active');
+      }
+    }
+
+    function detectFileFromBase64(base64String) {
+      // Check for common file signatures
+      const signatures = {
+        '/9j/': ['image/jpeg', 'file.jpg'],
+        'iVBORw0KGgo': ['image/png', 'file.png'],
+        'JVBERi0': ['application/pdf', 'file.pdf'],
+        'UEsDBBQA': ['application/zip', 'file.zip'],
+        'R0lGODlh': ['image/gif', 'file.gif'],
+        'AAABAA': ['image/x-icon', 'file.ico']
+      };
+
+      for (let [signature, [mimeType, fileName]] of Object.entries(signatures)) {
+        if (base64String.startsWith(signature)) {
+          return [mimeType, fileName];
+        }
+      }
+
+      return [null, null];
+    }
+
+    function base64ToBlob(base64, mimeType) {
+      const byteCharacters = atob(base64);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+        const slice = byteCharacters.slice(offset, offset + 1024);
+        const byteNumbers = new Array(slice.length);
+        
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        
+        byteArrays.push(new Uint8Array(byteNumbers));
+      }
+
+      return new Blob(byteArrays, { type: mimeType });
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function copyToClipboard() {
+      try {
+        await navigator.clipboard.writeText(outputText.value);
+        copyBtn.classList.add('success');
+        copyBtn.innerHTML = `
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          Copied!
+        `;
+        setTimeout(() => {
+          copyBtn.classList.remove('success');
+          copyBtn.innerHTML = `
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.083 2.57A2 2 0 0014.685 2H10a2 2 0 00-2 2z"/>
+              <path d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2"/>
+            </svg>
+            Copy
+          `;
+        }, 2000);
+      } catch (error) {
+        console.error('Failed to copy text:', error);
+      }
+    }
+
+    function downloadFile() {
+      if (!currentFile) return;
+      
+      const url = URL.createObjectURL(currentFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = currentFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function clearAll() {
+      inputText.value = '';
+      outputText.value = '';
+      currentFile = null;
+      currentFileName = '';
+      currentFileType = '';
+      fileInfo.textContent = '';
+      downloadBtn.disabled = true;
+      inputText.focus();
+    }
+
+    encodeBtn.addEventListener('click', encodeBase64);
+    decodeBtn.addEventListener('click', decodeBase64);
+    copyBtn.addEventListener('click', copyToClipboard);
+    downloadBtn.addEventListener('click', downloadFile);
+    clearBtn.addEventListener('click', clearAll);
+
+    // Add keyboard shortcuts
+    inputText.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+          case 'Enter':
+            encodeBase64();
+            e.preventDefault();
+            break;
+          case 'b':
+            decodeBase64();
+            e.preventDefault();
+            break;
+        }
+      }
+    });
+  }
+
+  // Add this to your DOMContentLoaded event listener
+  initializeBase64();
+
+  function initializeThemeSelector() {
+    const themeSelect = document.getElementById('themeSelect');
+
+    // Function to apply theme
+    function applyTheme(themeName) {
+      const root = document.documentElement;
+      
+      // Remove all existing theme classes
+      root.classList.remove('light-theme', 'dark-theme', 'forest-theme', 'sunset-theme', 'ocean-theme', 'lavender-theme', 'ember-theme', 'mint-theme');
+      
+      // Add the new theme class
+      root.classList.add(`${themeName}-theme`);
+
+      // Apply theme variables
+      root.style.setProperty('--bg-color', `var(--${themeName}-bg)`);
+      root.style.setProperty('--text-color', `var(--${themeName}-text)`);
+      root.style.setProperty('--secondary-text', `var(--${themeName}-secondary-text)`);
+      root.style.setProperty('--input-bg', `var(--${themeName}-input-bg)`);
+      root.style.setProperty('--input-border', `var(--${themeName}-input-border)`);
+      root.style.setProperty('--button-bg', `var(--${themeName}-button-bg)`);
+      root.style.setProperty('--button-hover', `var(--${themeName}-button-hover)`);
+      root.style.setProperty('--button-text', `var(--${themeName}-button-text, #ffffff)`);
+      root.style.setProperty('--chat-user-bg', `var(--${themeName}-chat-user-bg, var(--${themeName}-input-bg))`);
+      root.style.setProperty('--chat-bot-bg', `var(--${themeName}-chat-bot-bg, var(--${themeName}-card-bg))`);
+      root.style.setProperty('--header-bg', `var(--${themeName}-header-bg, var(--${themeName}-bg))`);
+      root.style.setProperty('--success', `var(--${themeName}-success, #34c759)`);
+      root.style.setProperty('--card-bg', `var(--${themeName}-card-bg, var(--${themeName}-bg))`);
+      root.style.setProperty('--card-border', `var(--${themeName}-card-border, var(--${themeName}-input-border))`);
+      root.style.setProperty('--hover-bg', `var(--${themeName}-hover-bg, var(--${themeName}-input-bg))`);
+    }
+
+    // Handle theme changes
+    themeSelect.addEventListener('change', (e) => {
+      const selectedTheme = e.target.value;
+      applyTheme(selectedTheme);
+      chrome.storage.local.set({ theme: selectedTheme });
+    });
+
+    // Load saved theme
+    chrome.storage.local.get(['theme'], (data) => {
+      const theme = data.theme || 'light';
+      themeSelect.value = theme;
+      applyTheme(theme);
+    });
+  }
+
+  // Add to your DOMContentLoaded event listener
+  initializeThemeSelector();
+
+  // Add this to your DOMContentLoaded event listener
+  function initializeWelcomeScreen() {
+    chrome.storage.local.get(['firstTime'], (data) => {
+      if (data.firstTime !== false) {
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        
+        // Make sure welcome screen is visible
+        welcomeScreen.style.display = 'flex';
+        
+        getStartedBtn.addEventListener('click', () => {
+          welcomeScreen.classList.add('hide');
+          // Remove welcome screen after animation
+          setTimeout(() => {
+            welcomeScreen.style.display = 'none';
+          }, 300);
+          chrome.storage.local.set({ firstTime: false });
+        });
+      } else {
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        welcomeScreen.style.display = 'none';
+      }
+    });
+  }
+
+  // Add to your DOMContentLoaded event listener
+  initializeWelcomeScreen();
 });
 
 function exportSettings() {

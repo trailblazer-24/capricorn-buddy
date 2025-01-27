@@ -1,37 +1,12 @@
 [
     {
       "site_url": "https://www.icegate.gov.in/",
-      "settings": "JAVA, nCode PKI",
+      "settings": "Only Signing Certificate",
       "notes": "https://signerutility.blob.core.windows.net/ signerutility/PKIComponent.zip"
     },
     {
-      "site_url": "https://unifiedportal-emp.epfindia.gov.in/epfo/",
-      "settings": "JAVA, DSC service, Chrome flags",
-      "notes": "DSC service settings- Notepad»Open»Local Disk C»Windows»System32»driver»etc»all files»hosts (hosts file in telegram)"
-    },
-    {
-      "site_url": "https://www.dgft.gov.in/CP/",
-      "settings": "Only embridge",
-      "notes": "https://embridge.emudhra.com/#"
-    },
-    {
-        "site_url": "https://www.trade.gov.in/  DGFT",
-        "settings": "Only embridge",
-        "notes": "https://embridge.emudhra.com/#"
-    },
-    {
-        "site_url": "https://coo.dgft.gov.in/",
-        "settings": "Only JAVA",
-        "notes": "JAVA 241/ JAVA 161"
-    },
-    {
-        "site_url": "https://contents.tdscpc.gov.in/  TRACES",
-        "settings": "JAVA, emSigner",
-        "notes": "emSigner inside Downloads section after login"
-    },
-    {
         "site_url": "https://eportal.incometax.gov.in/",
-        "settings": "Only embridge",
+        "settings": "Individual Signing Certificate",
         "notes": "https://embridge.emudhra.com/#"
     }
 ]
