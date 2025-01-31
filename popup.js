@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (filtered.length) {
         filtered.forEach(entry => {
 
-          addMessageToChat("bot", `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`);
+          addMessageToChat("bot", `Site: ${entry.site_url}\nCertificate: ${entry.certificate}\nNotes: ${entry.notes}`);
         });
       } else {
         addMessageToChat("bot", "Hein ji?");
@@ -273,7 +273,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
           if (combinedData.length) {
             // Prepare all entries in a single message
             const allEntries = combinedData.map(entry =>
-              `Site: ${entry.site_url}\nCertificate: ${entry.settings}\nNotes: ${entry.notes}`
+              `Site: ${entry.site_url}\nCertificate: ${entry.certificate}\nNotes: ${entry.notes}`
             ).join('\n\n');
 
 
@@ -556,7 +556,7 @@ Type any of the above commands to try them out and have some fun! 🎉`);
 
     const newSite = {
       site_url: document.getElementById("siteUrl").value,
-      settings: document.getElementById("siteSettings").value,
+      certificate: document.getElementById("siteSettings").value,
       notes: document.getElementById("siteNotes").value
     };
 

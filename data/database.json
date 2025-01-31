@@ -1,12 +1,12 @@
 [
     {
       "site_url": "https://www.icegate.gov.in/",
-      "settings": "Only Signing Certificate",
+      "certificate": "Only Signing Certificate",
       "notes": "https://signerutility.blob.core.windows.net/ signerutility/PKIComponent.zip"
     },
     {
         "site_url": "https://eportal.incometax.gov.in/",
-        "settings": "Individual Signing Certificate",
+        "certificate": "Individual Signing Certificate",
         "notes": "https://embridge.emudhra.com/#"
     }
 ]
