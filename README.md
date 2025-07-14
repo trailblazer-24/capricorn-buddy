@@ -61,7 +61,9 @@ Take short breaks without switching tabs:
 ## 🔐 Permissions Required
 
 `storage`: For saving user data (site info, todos, etc.)
+
 `downloads`: To enable export as files
+
 `activeTab`: For certain interactive features
 
 ---
@@ -71,6 +73,7 @@ Take short breaks without switching tabs:
 Built by Biswajit and currently helping over 15+ team members reduce repetitive work and boost their workflow efficiency by over 20%.
 
 > Version: `1.0.0`
+
 > License: `MIT`
 
 ---
