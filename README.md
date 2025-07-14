@@ -61,9 +61,7 @@ Take short breaks without switching tabs:
 ## 🔐 Permissions Required
 
 `storage`: For saving user data (site info, todos, etc.)
-
 `downloads`: To enable export as files
-
 `activeTab`: For certain interactive features
 
 ---
