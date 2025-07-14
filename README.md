@@ -4,7 +4,7 @@
 
 ![screenshot](./assets/screenshot.png)
 
-> 📦 Available now on the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions)  
+> 📦 Available now on the [Chrome Web Store](https://chromewebstore.google.com/detail/capricorn-buddy/fhglkkipgomcdobnmpjnghjkcdnkkffi)  
 > 🛠️ Built entirely with **Vanilla JavaScript**
 
 ---
@@ -52,3 +52,32 @@ Take short breaks without switching tabs:
    ```bash
    git clone https://github.com/yourusername/buddy-extension.git
    cd buddy-extension
+2. Open Chrome and go to `chrome://extensions`
+3. Enable **Developer** mode
+4. Click on **Load unpacked** and select the project folder
+
+---
+
+## 🔐 Permissions Required
+
+`storage`: For saving user data (site info, todos, etc.)
+
+`downloads`: To enable export as files
+
+`activeTab`: For certain interactive features
+
+---
+
+## ❤️ Made With Love
+
+Built by Biswajit and currently helping over 15+ team members reduce repetitive work and boost their workflow efficiency by over 20%.
+
+> Version: `1.0.0`
+> License: `MIT`
+
+---
+
+## 📬 Feedback & Contributions
+
+Have a feature request or found a bug?
+Open an issue or pull request — contributions are welcome!
