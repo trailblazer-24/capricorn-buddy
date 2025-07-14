@@ -2,7 +2,7 @@
 
 **Buddy** is a powerful and playful Chrome Extension crafted to boost productivity and simplify digital workflows — especially designed as an internal tool to help teams manage **digital signature setup notes**, copy-paste **frequently used snippets**, and stay sharp with mini-games and quick commands.
 
-![screenshot](./assets/screenshot.png)
+![screenshot](./Screenshot.png)
 
 > 📦 Available now on the [Chrome Web Store](https://chromewebstore.google.com/detail/capricorn-buddy/fhglkkipgomcdobnmpjnghjkcdnkkffi)  
 > 🛠️ Built entirely with **Vanilla JavaScript**
